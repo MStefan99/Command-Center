@@ -2,6 +2,7 @@
 NavBar
 </template>
 
+
 <script>
 import NavBar from './components/NavBar.vue';
 
@@ -12,6 +13,7 @@ export default {
 	}
 };
 </script>
+
 
 <style lang="stylus">
 html

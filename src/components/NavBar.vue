@@ -1,7 +1,7 @@
 <template lang="pug">
 nav
-	a#home-link(href="/") Command Center
-	span#device-status(class={connected: device}) {{device? 'Connected' : 'Not connected'}}
+	a#home-link(href='/') Command Center
+	span#device-status(:class='{connected: device}' @click="connection") {{device? 'Connected' : 'Not connected'}}
 </template>
 
 
@@ -9,11 +9,21 @@ nav
 export default {
 	data() {
 		return {
-			device: {
-				deviceType: 'transceiver',
-				deviceID: 1
-			}
+			device: null
 		};
+	},
+	methods: {
+		connection: function () {
+			if (this.device) {
+				if (confirm('Are you sure you want to disconnect?')) {
+					this.device = null;
+					// close usb device
+				}
+			} else {
+				navigator.usb.requestDevice({filters: [{vendorId: 0x04D8}]}).then(d => this.device = d);
+				// open usb device
+			}
+		}
 	}
 };
 </script>
@@ -26,7 +36,7 @@ nav
 	justify-content space-between
 	align-items center
 	background-color #555
-	color white
+	color #fff
 	padding .5em
 	margin-bottom 1em
 
@@ -41,7 +51,8 @@ nav
 	#device-status
 		font-weight bold
 		cursor pointer
+		color #f06070
 
 		&.connected
-			color #00f090
+			color #50f0b0
 </style>
