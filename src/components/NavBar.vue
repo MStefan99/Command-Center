@@ -51,7 +51,13 @@ nav
 	#device-status
 		font-weight bold
 		cursor pointer
-		color #f06070
+		color #aaa
+
+		&.error
+			color #f06070
+
+		&.warning
+			color #e7b309
 
 		&.connected
 			color #50f0b0
