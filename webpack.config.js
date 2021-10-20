@@ -24,8 +24,7 @@ module.exports = {
 					{use: ['raw-loader', 'pug-plain-loader']}
 				]
 			},
-			{test: /.styl(us)?$/, use: ['style-loader', 'css-loader', 'stylus-loader']},
-			{test: /.css$/, use: ['style-loader', 'css-loader']}
+			{test: /.styl(us)?$/, use: ['style-loader', 'css-loader', 'stylus-loader']}
 		]
 	},
 	plugins: [

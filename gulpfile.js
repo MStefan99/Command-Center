@@ -5,7 +5,7 @@ const {src, dest, watch} = require('gulp');
 const pug = require('gulp-pug');
 
 
-const pugFiles = './public/views/*.pug';
+const pugFiles = './src/views/*.pug';
 
 
 function pugTask() {

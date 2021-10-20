@@ -1,5 +1,5 @@
 <template lang="pug">
-nav
+nav#title-bar
 	a#home-link(href='/') Command Center
 	span#device-status(:class='{connected: device}' @click="connection") {{device? 'Connected' : 'Not connected'}}
 </template>
@@ -30,35 +30,27 @@ export default {
 
 
 <style scoped lang="stylus">
-nav
-	display flex
-	flex-flow row wrap
-	justify-content space-between
-	align-items center
-	background-color #555
-	color #fff
-	padding .5em
-	margin-bottom 1em
+@require "../style/colors.styl"
 
-	a
-		color inherit
-		text-decoration none
+#title-bar #home-link
+	font-size 2em
+	font-weight bold
 
-		&#home-link
-			font-size 2em
-			font-weight bold
+	@media screen and (max-width 768px)
+		font-size 1.5em
 
-	#device-status
-		font-weight bold
-		cursor pointer
-		color #aaa
+#device-status
+	font-weight bold
+	cursor pointer
+	margin-left auto
+	color lighten(color-gray, 50%)
 
-		&.error
-			color #f06070
+	&.error
+		color color-error
 
-		&.warning
-			color #e7b309
+	&.warning
+		color color-warning
 
-		&.connected
-			color #50f0b0
+	&.connected
+		color color-success
 </style>
