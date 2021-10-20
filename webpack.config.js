@@ -7,15 +7,23 @@ const {VueLoaderPlugin} = require('vue-loader');
 
 module.exports = {
 	mode: 'development',
-	entry: './src/main.js',
+	entry: {
+		index: './src/index.js'
+	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: 'bundle.js'
+		filename: '[name].js'
 	},
 	module: {
 		rules: [
 			{test: /.vue$/, use: 'vue-loader'},
-			{test: /.pug$/, use: 'pug-loader'},
+			{
+				test: /\.pug$/,
+				oneOf: [
+					{resourceQuery: /^\?vue/, use: ['pug-plain-loader']},
+					{use: ['raw-loader', 'pug-plain-loader']}
+				]
+			},
 			{test: /.styl(us)?$/, use: ['style-loader', 'css-loader', 'stylus-loader']},
 			{test: /.css$/, use: ['style-loader', 'css-loader']}
 		]
