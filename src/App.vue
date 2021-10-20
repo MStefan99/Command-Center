@@ -13,13 +13,3 @@ export default {
 	}
 };
 </script>
-
-
-<style lang="stylus">
-html
-	font-family sans-serif
-
-	body
-		margin 0;
-		background-color #fcfeff
-</style>
