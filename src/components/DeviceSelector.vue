@@ -10,7 +10,7 @@ div#device-selector
 </template>
 
 
-<style scoped lang="stylus">
+<style lang="stylus" scoped>
 @require "../style/colors.styl"
 
 #device-selector
@@ -48,6 +48,7 @@ div#device-selector
 <script>
 import store from '../js/store.js';
 
+
 export default {
 	name: 'DeviceSelector',
 	data() {
@@ -61,13 +62,13 @@ export default {
 					.then(device => {
 						this.sharedState.addDevice({
 							usbDevice: device,
-							type: device.productId === 0x000a? 'receiver' : 'controller'
+							type: device.productId === 0x000a? 'transceiver' : 'controller'
 						});
 						return device.open();
 					})
-			.catch(() => {
-				console.warn('No device selected to connect');
-			});
+					.catch(() => {
+						console.warn('No device selected to connect');
+					});
 		},
 		disconnect(device) {
 			if (confirm('Are you sure you want to disconnect ' + device.usbDevice.productName + '?')) {

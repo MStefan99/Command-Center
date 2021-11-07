@@ -1,14 +1,13 @@
 <template lang="pug">
 nav#title-bar
 	a#home-link(href='/') Command Center
-	label#device-status(for="device-toggle" :class='{connected: sharedState.devices.length}')
-		| {{sharedState.devices.length? 'Connected' : 'Not connected'}}
+	label#device-status(for="device-toggle" :class='getConnectionMethod().class') {{getConnectionMethod().message}}
 	input#device-toggle.hidden(type="checkbox" v-model="deviceSelectorShown")
 	DeviceSelector(v-show="deviceSelectorShown")
 </template>
 
 
-<style scoped lang="stylus">
+<style lang="stylus" scoped>
 @require "../style/colors.styl"
 
 #title-bar #home-link
@@ -29,7 +28,7 @@ nav#title-bar
 		color color-red
 
 	&.warning
-		color color-orange
+		color color-yellow
 
 	&.connected
 		color color-green
@@ -44,8 +43,6 @@ import store from '../js/store.js';
 import DeviceSelector from './DeviceSelector.vue';
 
 
-let pollHandle;
-
 export default {
 	name: 'NavBar',
 	components: {DeviceSelector},
@@ -54,6 +51,23 @@ export default {
 			deviceSelectorShown: false,
 			sharedState: store
 		};
+	},
+	methods: {
+		getConnectionMethod() {
+			if (this.sharedState.devices.some(d => d.type === 'controller')) {
+				return {message: 'Direct connection', class: 'connected'};
+			} else if (this.sharedState.devices.some(d => d.type === 'transceiver')) {
+				// noinspection PointlessBooleanExpressionJS  // TODO: Check whether wireless link is established
+				if (true) {
+					return {message: 'Wireless connection', class: 'warning'};
+				} else {
+					// noinspection UnreachableCodeJS
+					return {message: 'Wireless connection lost', class: 'error'};
+				}
+			} else {
+				return {message: 'No connection'};
+			}
+		}
 	}
 };
 </script>
