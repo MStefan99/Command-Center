@@ -1,32 +1,11 @@
 <template lang="pug">
 nav#title-bar
 	a#home-link(href='/') Command Center
-	span#device-status(:class='{connected: device}' @click="connection") {{device? 'Connected' : 'Not connected'}}
+	label#device-status(for="device-toggle" :class='{connected: sharedState.devices.length}')
+		| {{sharedState.devices.length? 'Connected' : 'Not connected'}}
+	input#device-toggle.hidden(type="checkbox" v-model="deviceSelectorShown")
+	DeviceSelector(v-show="deviceSelectorShown")
 </template>
-
-
-<script>
-export default {
-	data() {
-		return {
-			device: null
-		};
-	},
-	methods: {
-		connection: function () {
-			if (this.device) {
-				if (confirm('Are you sure you want to disconnect?')) {
-					this.device = null;
-					// close usb device
-				}
-			} else {
-				navigator.usb.requestDevice({filters: [{vendorId: 0x04D8}]}).then(d => this.device = d);
-				// open usb device
-			}
-		}
-	}
-};
-</script>
 
 
 <style scoped lang="stylus">
@@ -43,14 +22,38 @@ export default {
 	font-weight bold
 	cursor pointer
 	margin-left auto
+	user-select none
 	color lighten(color-gray, 50%)
 
 	&.error
-		color color-error
+		color color-red
 
 	&.warning
-		color color-warning
+		color color-orange
 
 	&.connected
-		color color-success
+		color color-green
+
+#device-temp
+	margin-left 1em
 </style>
+
+
+<script>
+import store from '../js/store.js';
+import DeviceSelector from './DeviceSelector.vue';
+
+
+let pollHandle;
+
+export default {
+	name: 'NavBar',
+	components: {DeviceSelector},
+	data() {
+		return {
+			deviceSelectorShown: false,
+			sharedState: store
+		};
+	}
+};
+</script>

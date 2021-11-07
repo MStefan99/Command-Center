@@ -16,5 +16,5 @@ function pugTask() {
 
 
 module.exports.default = () => {
-	watch(pugFiles, { ignoreInitial: false }, pugTask);
+	watch(pugFiles, {ignoreInitial: false}, pugTask);
 };
