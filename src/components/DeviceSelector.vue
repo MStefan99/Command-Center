@@ -1,17 +1,20 @@
+<link rel="stylesheet" href="../style/style.styl">
 <template lang="pug">
 div#device-selector
 	span.bold(v-if="sharedState.devices.length") Connected devices
 	span.bold(v-else) No devices connected
-	div#devices
-		div.device(v-for="device of sharedState.devices")
-			span {{device.usbDevice.productName}}
-			span.disconnect-button(@click="disconnect(device)") X
-	div#connect-button(@click="connect") {{sharedState.devices.length? 'Connect another' : 'Connect'}}
+	div.my-3
+		div.my-2.device(v-for="device of sharedState.devices" :key="device.id")
+			span.cursor-pointer(@click="this.sharedState.viewDevice(device)") {{device.usbDevice.productName}}
+			span.text-danger.cursor-pointer.bold.ml-2(@click="disconnect(device)") X
+	button.btn-primary.bold.user-select-none.w-100.mt-1(@click="connect")
+		| {{sharedState.devices.length? 'Connect another' : 'Connect'}}
 </template>
 
 
 <style lang="stylus" scoped>
 @require "../style/colors.styl"
+@require "../style/stylify.styl"
 
 #device-selector
 	position absolute
@@ -21,27 +24,6 @@ div#device-selector
 	box-shadow 0 0 1em #0005
 	border-radius 6px
 	padding 1em
-
-	#devices
-		margin 1em 0
-
-		.device
-			margin-bottom .5em
-
-	.disconnect-button
-		color color-red
-		font-weight bold
-		margin-left 1ch
-		cursor pointer
-		user-select none
-
-	#connect-button
-		background-color color-blue
-		font-weight bold
-		padding .5em
-		border-radius 4px
-		text-align center
-		cursor pointer
 </style>
 
 
@@ -58,11 +40,17 @@ export default {
 	},
 	methods: {
 		connect() {
-			navigator.usb.requestDevice({filters: [{vendorId: 0x04D8}]})
+			navigator.usb.requestDevice({
+				filters: [
+					{vendorId: 0x04D8, productId: 0x000a},
+					{vendorId: 0x04D8, productId: 0x000b}
+				]
+			})
 					.then(device => {
 						this.sharedState.addDevice({
 							usbDevice: device,
-							type: device.productId === 0x000a? 'transceiver' : 'controller'
+							id: Math.floor((Math.random() * 0xffff)).toString(16),
+							type: device.productId !== 0x000a? 'controller' : 'transceiver'
 						});
 						return device.open();
 					})

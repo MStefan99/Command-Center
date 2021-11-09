@@ -2,11 +2,21 @@
 
 const store = {
 	devices: [],
-	addDevice: function (device) {
+	applicationState: {
+		deviceSelectorOpen: false,
+		viewedDevice: null
+	},
+	addDevice(device) {
 		this.devices.push(device);
 	},
-	removeDevice: function (device) {
+	removeDevice(device) {
 		this.devices = this.devices.filter(d => d !== device);
+	},
+	viewDevice(device) {
+		this.applicationState.viewedDevice = device;
+	},
+	stopViewingDevice() {
+		this.applicationState.viewedDevice = null;
 	}
 };
 

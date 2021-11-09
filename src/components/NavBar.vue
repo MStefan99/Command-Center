@@ -1,14 +1,20 @@
+<link rel="stylesheet" href="../style/stylify.styl">
 <template lang="pug">
 nav#title-bar
 	a#home-link(href='/') Command Center
 	label#device-status(for="device-toggle" :class='getConnectionMethod().class') {{getConnectionMethod().message}}
-	input#device-toggle.hidden(type="checkbox" v-model="deviceSelectorShown")
-	DeviceSelector(v-show="deviceSelectorShown")
+	input#device-toggle.hidden(type="checkbox" v-model="this.sharedState.applicationState.deviceSelectorOpen")
+	transition(name="popup")
+		DeviceSelector(@deviceInfo="device => this.sharedState.viewDevice(device)"
+			v-if="this.sharedState.applicationState.deviceSelectorOpen")
+	transition(name="popup")
+		DeviceViewer(v-if="sharedState.applicationState.viewedDevice")
 </template>
 
 
 <style lang="stylus" scoped>
 @require "../style/colors.styl"
+@require "../style/stylify.styl"
 
 #title-bar #home-link
 	font-size 2em
@@ -32,23 +38,20 @@ nav#title-bar
 
 	&.connected
 		color color-green
-
-#device-temp
-	margin-left 1em
 </style>
 
 
 <script>
 import store from '../js/store.js';
 import DeviceSelector from './DeviceSelector.vue';
+import DeviceViewer from './DeviceViewer.vue';
 
 
 export default {
 	name: 'NavBar',
-	components: {DeviceSelector},
+	components: {DeviceViewer, DeviceSelector},
 	data() {
 		return {
-			deviceSelectorShown: false,
 			sharedState: store
 		};
 	},
