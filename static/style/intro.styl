@@ -1,3 +1,4 @@
+@require '../../src/style/stylify.styl'
 @require '../../src/style/colors.styl'
 
 
@@ -12,4 +13,18 @@ html
 
 		#onboard-1-helicopter
 			max-height 15vh
-			max-width 20vw
+			max-width 40vw
+			animation helicopter 10s ease-in-out infinite
+
+			@keyframes helicopter
+				from
+					transform translate(0, 0)
+
+				25%
+					transform translate(5%, -5%)
+
+				50%
+					transform translate(8%, 3%)
+
+				75%
+					transform translate(-5%, -8%)

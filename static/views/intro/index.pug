@@ -3,17 +3,18 @@ doctype html
 
 html(lang='en')
 	head
-		meta(name='viewport' content='width=device-width, initial-scale=1.0, min-scale=1.0')
+		meta(name='viewport' content='width=device-width, initial-scale=1.0')
 		link(rel='stylesheet' href='/style/intro.css')
 		title Welcome to Command Center
 
 	body
-		div#top
-			div#splash
-				img#onboard-1-helicopter(src='/img/010-helicopter.svg')
+		div#intro-container.container-md.mx-auto
+			div
+				object#onboard-1-helicopter(data='/img/010-helicopter.svg')
 				h2 Helicopter!
 				p wow so propeller, much blade
+				p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias culpa dolores earum esse, facere hic iste laboriosam natus nesciunt, reiciendis suscipit totam vel! Accusantium, ad earum mollitia officia sint vero.
 
-		div#nav
-			span Back
-			span Next
+			div
+				span Back
+				span Next

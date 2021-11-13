@@ -110,7 +110,7 @@ html
 				&.alert-{clr}
 					background lighten(color- + clr, 80%)
 					color darken(color- + clr, 30%)
-					border 1.2px solid lighten(color- + clr, 70%)
+					border 1px solid lighten(color- + clr, 70%)
 
 		.jumbotron
 			padding 2em
@@ -239,8 +239,9 @@ html
 								if s != ''
 									classes += ','
 
-							{classes}
-								{spacingType}{getPostfix(side)} spacingSpace
+							if spacing != 'auto' or type == 'm'
+								{classes}
+									{spacingType}{getPostfix(side)} spacingSpace
 
 							classes = ''
 							for s in spacingSide
@@ -487,8 +488,8 @@ html
 					margin-left 0
 
 				&[type=email], &[type=password], &[type=number]
-				&[type=search], &[type=text], &[type=email],
-				display block
+				&[type=search], &[type=text], &[type=email]
+					display block
 					width 100%
 					padding .7em
 					font-size 1em
