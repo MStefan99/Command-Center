@@ -6,4 +6,8 @@ import {createApp} from 'vue';
 import App from './App.vue';
 
 
-createApp(App).mount('#app');
+if (localStorage.getItem('intro-viewed')) {
+	createApp(App).mount('#app');
+} else {
+	window.location.href = '/intro/';
+}

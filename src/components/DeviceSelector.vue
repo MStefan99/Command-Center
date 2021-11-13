@@ -1,6 +1,5 @@
-<link rel="stylesheet" href="../style/style.styl">
 <template lang="pug">
-div#device-selector
+div#device-selector.my-5.mx-3
 	span.bold(v-if="sharedState.devices.length") Connected devices
 	span.bold(v-else) No devices connected
 	div.my-3
@@ -18,8 +17,8 @@ div#device-selector
 
 #device-selector
 	position absolute
-	right 1em
-	top 3em
+	top 0
+	right 0
 	background-color color-gray
 	box-shadow 0 0 1em #0005
 	border-radius 6px
@@ -47,6 +46,10 @@ export default {
 				]
 			})
 					.then(device => {
+						if (this.sharedState.devices.some(d => d.usbDevice.productId === device.productId)) {
+							alert('Looks like this device is already connected!');
+							return;
+						}
 						this.sharedState.addDevice({
 							usbDevice: device,
 							id: Math.floor((Math.random() * 0xffff)).toString(16),

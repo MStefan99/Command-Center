@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="../style/stylify.styl">
 <template lang="pug">
 nav#title-bar
 	a#home-link(href='/') Command Center

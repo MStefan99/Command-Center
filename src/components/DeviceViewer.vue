@@ -1,5 +1,5 @@
 <template lang="pug">
-div#device-viewer
+div#device-viewer.container-sm
 	div.d-flex.align-items-start.justify-content-between
 		h2 Device information
 		span.text-danger.cursor-pointer.bold.ml-2(@click="this.sharedState.stopViewingDevice()") X
@@ -39,7 +39,7 @@ div#device-viewer
 	top 20vh
 	left 0
 	right 0
-	margin 0 30vw
+	margin 0 auto
 	background-color color-gray
 	box-shadow 0 0 1em #0005
 	border-radius 6px
