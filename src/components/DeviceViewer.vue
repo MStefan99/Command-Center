@@ -2,31 +2,25 @@
 div#device-viewer.container-sm
 	div.d-flex.align-items-start.justify-content-between
 		h2 Device information
-		span.text-danger.cursor-pointer.bold.ml-2(@click="this.sharedState.stopViewingDevice()") X
+		i.fi.fi-br-cross.text-danger.cursor-pointer.ml-2(@click="this.sharedState.stopViewingDevice()")
 	div.d-flex.justify-content-between
 		span Vendor
-		span.bold.my-1 {{device.usbDevice.manufacturerName}}
+		span.bold.my-1 {{device.manufacturerName}}
 	div.d-flex.justify-content-between
 		span Vendor ID
-		span.bold.my-1 {{device.usbDevice.vendorId}}
+		span.bold.my-1 {{device.vendorId}}
 	div.d-flex.justify-content-between
 		span Name
-		span.bold.my-1 {{device.usbDevice.productName || 'N/A'}}
+		span.bold.my-1 {{device.productName}}
 	div.d-flex.justify-content-between
 		span Device ID
-		span.bold.my-1 {{device.usbDevice.productId}}
+		span.bold.my-1 {{device.productId}}
 	div.d-flex.justify-content-between
 		span Device version
-		span.bold.my-1 {{device.usbDevice.deviceVersionMajor}}.{{device.usbDevice.deviceVersionMinor}}.{{device.usbDevice.deviceVersionSubminor}}
+		span.bold.my-1 {{device.deviceVersionMajor}}.{{device.deviceVersionMinor}}.{{device.deviceVersionSubminor}}
 	div.d-flex.justify-content-between
 		span Supported USB version
-		span.bold.my-1 {{device.usbDevice.usbVersionMajor}}.{{device.usbDevice.usbVersionMinor}}.{{device.usbDevice.usbVersionSubminor}}
-	div.d-flex.justify-content-between
-		span Connected
-		span.bold.my-1 {{device.usbDevice.opened? 'Yes' : 'No'}}
-	div.d-flex.justify-content-between
-		span Application ID
-		span.bold.my-1 0x{{device.id}}
+		span.bold.my-1 {{device.usbVersionMajor}}.{{device.usbVersionMinor}}.{{device.usbVersionSubminor}}
 </template>
 
 
@@ -56,7 +50,7 @@ export default {
 	data() {
 		return {
 			sharedState: store,
-			device: store.applicationState.viewedDevice
+			device: store.applicationState.viewedDevice.usbDevice
 		}
 	}
 };

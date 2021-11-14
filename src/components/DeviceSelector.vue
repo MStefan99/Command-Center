@@ -3,9 +3,9 @@ div#device-selector.my-5.mx-3
 	span.bold(v-if="sharedState.devices.length") Connected devices
 	span.bold(v-else) No devices connected
 	div.my-3
-		div.my-2.device(v-for="device of sharedState.devices" :key="device.id")
+		div.my-2.device(v-for="device of sharedState.devices" :key="device.usbDevice.productId")
 			span.cursor-pointer(@click="this.sharedState.viewDevice(device)") {{device.usbDevice.productName}}
-			span.text-danger.cursor-pointer.bold.ml-2(@click="disconnect(device)") X
+			i.fi.fi-br-cross-circle.text-danger.cursor-pointer.ml-2(@click="disconnect(device)")
 	button.btn-primary.bold.user-select-none.w-100.mt-1(@click="connect")
 		| {{sharedState.devices.length? 'Connect another' : 'Connect'}}
 </template>
@@ -52,7 +52,6 @@ export default {
 						}
 						this.sharedState.addDevice({
 							usbDevice: device,
-							id: Math.floor((Math.random() * 0xffff)).toString(16),
 							type: device.productId !== 0x000a? 'controller' : 'transceiver'
 						});
 						return device.open();
@@ -69,4 +68,10 @@ export default {
 		}
 	}
 };
+
+
+navigator.usb.addEventListener('disconnect', event => {
+	store.removeDevice(event.device);
+	alert('USB connection lost! Please check your connection!');
+});
 </script>

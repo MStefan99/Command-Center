@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="style/stylify.styl">
 <template lang="pug">
 NavBar
 </template>

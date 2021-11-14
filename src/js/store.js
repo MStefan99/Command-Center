@@ -1,6 +1,9 @@
 'use strict';
 
-const store = {
+import {reactive} from 'vue';
+
+
+const store = reactive({
 	devices: [],
 	applicationState: {
 		deviceSelectorOpen: false,
@@ -10,7 +13,11 @@ const store = {
 		this.devices.push(device);
 	},
 	removeDevice(device) {
-		this.devices = this.devices.filter(d => d !== device);
+		if (!device.productId) {
+			this.devices = this.devices.filter(d => d !== device);
+		} else {
+			this.devices = this.devices.filter(d => d.usbDevice !== device);
+		}
 	},
 	viewDevice(device) {
 		this.applicationState.viewedDevice = device;
@@ -18,7 +25,7 @@ const store = {
 	stopViewingDevice() {
 		this.applicationState.viewedDevice = null;
 	}
-};
+});
 
 
 export default store;

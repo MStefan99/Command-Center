@@ -10,21 +10,34 @@ html
 		display flex
 		flex-flow column nowrap
 		justify-content space-between
+		margin 0
 
-		#onboard-1-helicopter
-			max-height 15vh
-			max-width 40vw
-			animation helicopter 10s ease-in-out infinite
+		#intro-container
+			background linear-gradient(to bottom right, #1ad2fe 0%, #13ebc4 100%)
+			padding 1em
+			min-height 100vh
+			color white
+			font-weight bold
+			border-radius 10px
 
-			@keyframes helicopter
-				from
-					transform translate(0, 0)
+			#helicopter-bg
+				border-radius 500px
+				background-color #cbdbec
 
-				25%
-					transform translate(5%, -5%)
+				#onboard-1-helicopter
+					max-height 15vh
+					max-width 40vw
+					animation helicopter 10s ease-in-out infinite
 
-				50%
-					transform translate(8%, 3%)
+					@keyframes helicopter
+						from
+							transform translate(0, 0)
 
-				75%
-					transform translate(-5%, -8%)
+						25%
+							transform translate(5%, -5%)
+
+						50%
+							transform translate(8%, 3%)
+
+						75%
+							transform translate(-5%, -8%)

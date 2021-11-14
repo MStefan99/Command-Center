@@ -24,6 +24,7 @@ module.exports = {
 					{use: ['raw-loader', 'pug-plain-loader']}
 				]
 			},
+			{test: /.css$/, use: ['style-loader', 'css-loader']},
 			{test: /.styl(us)?$/, use: ['style-loader', 'css-loader', 'stylus-loader']}
 		]
 	},
@@ -33,6 +34,7 @@ module.exports = {
 	devServer: {
 		static: './dist',
 		port: 3000,
+		compress: true,
 		hot: true
 	},
 	stats: 'minimal'

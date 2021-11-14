@@ -1,6 +1,7 @@
 'use strict';
 
 import './style/style.styl';
+import './style/uicons-bold-rounded.css';
 
 import {createApp} from 'vue';
 import App from './App.vue';
