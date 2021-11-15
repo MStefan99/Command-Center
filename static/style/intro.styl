@@ -11,33 +11,40 @@ html
 		flex-flow column nowrap
 		justify-content space-between
 		margin 0
+		overflow hidden
+		color #4970FF
+		font-size 2.5vh
+		line-height @font-size * 2
 
-		#intro-container
-			background linear-gradient(to bottom right, #1ad2fe 0%, #13ebc4 100%)
-			padding 1em
-			min-height 100vh
-			color white
-			font-weight bold
-			border-radius 10px
+		.cover-container
+			.cover
+				display block
+				width auto
+				margin 0 auto
+				max-height 70vh
+				max-width 100%
+				margin-bottom -7vh
 
-			#helicopter-bg
-				border-radius 500px
-				background-color #cbdbec
+			.title
+				text-align center
+				font-size 5vh
+				font-weight 900
 
-				#onboard-1-helicopter
-					max-height 15vh
-					max-width 40vw
-					animation helicopter 10s ease-in-out infinite
+			.message
+				text-align center
+				white-space pre-wrap
 
-					@keyframes helicopter
-						from
-							transform translate(0, 0)
+		#nav-container
+			display flex
+			flex-flow row nowrap
+			justify-content space-between
 
-						25%
-							transform translate(5%, -5%)
+			.button
+				border-radius @font-size * 2
+				border solid 3px @color
+				padding 0 2ch
+				font-weight bold
 
-						50%
-							transform translate(8%, 3%)
-
-						75%
-							transform translate(-5%, -8%)
+				&.button-next
+					background-color @color
+					color white

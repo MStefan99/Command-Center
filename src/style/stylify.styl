@@ -32,6 +32,13 @@ negate(unit)
 		unit
 
 
+getPrefix(value)
+	if value != ''
+		value + \-
+	else
+		''
+
+
 getPostfix(value)
 	if value != ''
 		\- + value
@@ -171,29 +178,18 @@ html
 		// Dimensions
 
 		for size in 25 50 75 100
-			.w-{size}
-				width size + '%'
+			for limit in '' 'min' 'max'
+				.{getPrefix(limit)}w-{size}
+					{getPrefix(limit)}width size + '%'
 
-			.mw-{size}
-				max-width size + '%'
+				.{getPrefix(limit)}h-{size}
+					{getPrefix(limit)}height size + '%'
 
-			.min-vw-{size}
-				min-width size vw
+				.{getPrefix(limit)}vw-{size}
+					{getPrefix(limit)}width size vw
 
-			.vw-{size}
-				max-width size vw
-
-			.h-{size}
-				height size + '%'
-
-			.mh-{size}
-				max-height size + '%'
-
-			.min-vh-{size}
-				min-height size vh
-
-			.vh-{size}
-				max-height size vh
+				.{getPrefix(limit)}vh-{size}
+					{getPrefix(limit)}height size vh
 
 		// Spacing
 

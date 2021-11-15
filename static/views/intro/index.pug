@@ -8,15 +8,14 @@ html(lang='en')
 		title Welcome to Command Center
 
 	body
-		div#intro-container.container-md.mx-auto
-			h1 Welcome
-			h2 Let's get started!
-			div#icons
-				div#helicopter-bg
-					object#onboard-1-helicopter(data='/img/010-helicopter.svg')
-			h2 Helicopter!
-			p wow so propeller, much blade
+		div.d-flex.flex-column.justify-content-between.container-sm.mx-auto.vh-100
+			div.cover-container
+				img.cover(src='/img/app-onboarding-1.jpg')
+				div.mx-3
+					h2.title Welcome
+					p.message Flying just about anything just got more exciting, easy and fun, regardless of your piloting skills!
 
-			div
-				span Back
-				span Next
+			div#nav-container.nav-panel.d-flex.justify-content-between.m-4
+				span.button.button-prev Back
+				div#page-selector-container
+				span.button.button-next Next
