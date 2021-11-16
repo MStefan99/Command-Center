@@ -14,11 +14,8 @@ html
 		overflow hidden
 		color #4970FF
 		font-size 2.5vh
-		line-height @font-size * 2
 
 		#cover-container
-			position relative
-
 			.cover
 				display block
 				width auto
@@ -31,11 +28,13 @@ html
 
 		#text-container
 			transition opacity .1s ease-in
+			line-height @font-size * 2
 
 			#title
 				text-align center
 				font-size 5vh
 				font-weight 900
+				text-shadow 0 5px 10px #0001
 
 			#message
 				display inline-block
@@ -48,11 +47,11 @@ html
 			justify-content space-between
 
 			.button
-				border-radius @font-size * 2
-				border solid 3px @color
-				padding 0 2ch
-				font-weight bold
+				border-radius 5vh
+				border solid 2px @color
+				padding 3px 2ch
 				cursor pointer
+				box-shadow 0 5px 10px #0001
 
 				&#button-next
 					background-color @color
