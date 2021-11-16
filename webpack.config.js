@@ -33,6 +33,7 @@ module.exports = {
 	],
 	devServer: {
 		static: './dist',
+		allowedHosts: ['localhost', 'cc.localhost'],
 		port: 3000,
 		compress: true,
 		hot: true

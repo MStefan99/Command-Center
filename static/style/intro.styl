@@ -16,7 +16,9 @@ html
 		font-size 2.5vh
 		line-height @font-size * 2
 
-		.cover-container
+		#cover-container
+			position relative
+
 			.cover
 				display block
 				width auto
@@ -24,13 +26,19 @@ html
 				max-height 70vh
 				max-width 100%
 				margin-bottom -7vh
+				transition transform .2s ease-in,
+				opacity .2s ease-in
 
-			.title
+		#text-container
+			transition opacity .1s ease-in
+
+			#title
 				text-align center
 				font-size 5vh
 				font-weight 900
 
-			.message
+			#message
+				display inline-block
 				text-align center
 				white-space pre-wrap
 
@@ -44,7 +52,8 @@ html
 				border solid 3px @color
 				padding 0 2ch
 				font-weight bold
+				cursor pointer
 
-				&.button-next
+				&#button-next
 					background-color @color
 					color white
