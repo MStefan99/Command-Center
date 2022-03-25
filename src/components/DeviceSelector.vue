@@ -28,6 +28,7 @@ div#device-selector.my-5.mx-3
 
 <script>
 import store from '../js/store.js';
+import {connectDevice} from '../js/driver.js';
 
 
 export default {
@@ -45,33 +46,9 @@ export default {
 					{vendorId: 0x04D8, productId: 0x000b}
 				]
 			})
-					.then(device => {
-						if (this.sharedState.devices.some(d => d.usbDevice.productId === device.productId)) {
-							alert('Looks like this device is already connected!');
-							return;
-						}
-						this.sharedState.addDevice({
-							usbDevice: device,
-							type: device.productId !== 0x000a? 'controller' : 'transceiver'
-						});
-						return device.open();
-					})
-					.catch(() => {
-						console.warn('No device selected to connect');
-					});
-		},
-		disconnect(device) {
-			if (confirm('Are you sure you want to disconnect ' + device.usbDevice.productName + '?')) {
-				this.sharedState.removeDevice(device);
-				device.usbDevice.close();
-			}
+				.then(device => connectDevice(device))
+				.catch(() => console.warn('No device selected to connect'));
 		}
 	}
 };
-
-
-navigator.usb.addEventListener('disconnect', event => {
-	store.removeDevice(event.device);
-	alert('USB connection lost! Please check your connection!');
-});
 </script>
