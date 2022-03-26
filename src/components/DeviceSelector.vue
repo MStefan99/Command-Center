@@ -1,13 +1,14 @@
 <template lang="pug">
 div#device-selector.my-5.mx-3
-	span.bold(v-if="sharedState.devices.length") Connected devices
+	span.bold(v-if="sharedState.usbDriver.devices.length") Connected devices
 	span.bold(v-else) No devices connected
 	div.my-3
-		div.my-2.device(v-for="device of sharedState.devices" :key="device.usbDevice.productId")
-			span.cursor-pointer(@click="this.sharedState.viewDevice(device)") {{device.usbDevice.productName}}
-			i.fi.fi-br-cross-circle.text-danger.cursor-pointer.ml-2(@click="disconnect(device)")
+		div.my-2.device(v-for="device of sharedState.usbDriver.devices"
+			:key="device._usb.productId")
+			span.cursor-pointer(@click="this.sharedState.viewDevice(device)") {{device._usb.productName}}
+			i.fi.fi-br-cross-circle.text-danger.cursor-pointer.ml-2(@click="sharedState.usbDriver.disconnectDevice(device)")
 	button.btn-primary.bold.user-select-none.w-100.mt-1(@click="connect")
-		| {{sharedState.devices.length? 'Connect another' : 'Connect'}}
+		| {{sharedState.usbDriver.devices.length? 'Connect another' : 'Connect'}}
 </template>
 
 

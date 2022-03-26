@@ -50,7 +50,7 @@ export default {
 	data() {
 		return {
 			sharedState: store,
-			device: store.applicationState.viewedDevice.usbDevice
+			device: store.applicationState.viewedDevice._usb
 		}
 	}
 };

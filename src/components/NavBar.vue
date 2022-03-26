@@ -56,9 +56,9 @@ export default {
 	},
 	methods: {
 		getConnectionMethod() {
-			if (this.sharedState.devices.some(d => d.type === 'controller')) {
+			if (this.sharedState.usbDriver.devices.some(d => d.type === 'controller')) {
 				return {message: 'Direct connection', class: 'connected'};
-			} else if (this.sharedState.devices.some(d => d.type === 'transceiver')) {
+			} else if (this.sharedState.usbDriver.devices.some(d => d.type === 'transceiver')) {
 				// noinspection PointlessBooleanExpressionJS  // TODO: Check whether wireless link is established
 				if (true) {
 					return {message: 'Wireless connection', class: 'warning'};

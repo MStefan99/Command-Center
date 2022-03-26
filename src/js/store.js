@@ -1,10 +1,11 @@
 'use strict';
 
 import {reactive} from 'vue';
+import * as usbDriver from '../js/driver.js';
 
 
 const store = reactive({
-	devices: [],
+	usbDriver: usbDriver,
 	applicationState: {
 		deviceSelectorOpen: false,
 		viewedDevice: null

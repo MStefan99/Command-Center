@@ -1,10 +1,12 @@
 'use strict';
 
 
+import {reactive} from 'vue';
 import store from './store.js';
 
 
-const devices = [];
+export const devices = reactive([]);
+
 
 const commands = new Map();
 commands.set(0x1, (data) => {
@@ -14,9 +16,27 @@ commands.set(0x1, (data) => {
 });
 
 
+function poll(device) {
+	device._usb.transferIn(1, 8)
+		.then(result => {
+			if (result.data.byteLength < 8) {
+				return;
+			}
+			const commandCode = result.data.getUint8(1);
+			const fn = commands.get(commandCode);
+			if (!fn) {
+				return;
+			}
+			fn(result.data);
+		});
+
+	device._pollHandle = setTimeout(() => poll(device), 35);
+}
+
+
 export function connectDevice(device) {
 	return new Promise((resolve, reject) => {
-		if (devices.some(d => d._device.productId === device.productId)) {
+		if (devices.some(d => d._usb.productId === device.productId)) {
 			alert('Looks like this device is already connected!');
 			reject();
 		}
@@ -25,25 +45,14 @@ export function connectDevice(device) {
 			.then(() => device.selectConfiguration(1))
 			.then(() => device.claimInterface(0))
 			.then(() => {
-				devices.push({
-					_device: device,
+				const vDev = {
+					_usb: device,
+					_pollHandle: null,
 					type: device.productId !== 0x000a? 'controller' : 'receiver'
-				});
+				};
 
-				setInterval(() => {
-					device.transferIn(1, 8)
-						.then(result => {
-							if (result.data.byteLength < 8) {
-								return;
-							}
-							const commandCode = result.data.getUint8(1);
-							const fn = commands.get(commandCode);
-							if (!fn) {
-								return;
-							}
-							fn(result.data);
-						});
-				}, 20);
+				poll(vDev);
+				devices.push(vDev);
 			})
 			.catch(err => reject(err));
 	});
@@ -51,13 +60,12 @@ export function connectDevice(device) {
 
 
 export function disconnectDevice(device) {
-	if (!device.productId) {
-		this.devices = this.devices.filter(d => d !== device);
-	} else {
-		this.devices = this.devices.filter(d => d._device !== device);
+	devices.splice(devices.findIndex(d => d._usb === device), 1);
+	if (device._pollHandle) {
+		clearTimeout(device._pollHandle);
 	}
-	if (device.opened) {
-		device.close();
+	if (device._usb.opened) {
+		device._usb.close();
 	}
 }
 
@@ -68,6 +76,6 @@ export function connectedDevices() {
 
 
 navigator.usb.addEventListener('disconnect', event => {
-	disconnectDevice(event.device);
+	disconnectDevice({_usb: event.device});
 	alert('USB connection lost! Please check your connection!');
 });
