@@ -49,7 +49,8 @@ function poll(device) {
 			fn(result.data);
 
 			device._pollHandle = setTimeout(() => poll(device), 35);
-		});
+		})
+		.catch(err => console.warn(err));
 }
 
 

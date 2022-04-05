@@ -7,20 +7,14 @@ div#device-viewer.container-sm
 		span Vendor
 		span.bold.my-1 {{device.manufacturerName}}
 	div.d-flex.justify-content-between
-		span Vendor ID
-		span.bold.my-1 {{device.vendorId}}
-	div.d-flex.justify-content-between
 		span Name
 		span.bold.my-1 {{device.productName}}
-	div.d-flex.justify-content-between
-		span Device ID
-		span.bold.my-1 {{device.productId}}
 	div.d-flex.justify-content-between
 		span Device version
 		span.bold.my-1 {{device.deviceVersionMajor}}.{{device.deviceVersionMinor}}.{{device.deviceVersionSubminor}}
 	div.d-flex.justify-content-between
 		span Supported USB version
-		span.bold.my-1 {{device.usbVersionMajor}}.{{device.usbVersionMinor}}.{{device.usbVersionSubminor}}
+		span.bold.my-1 {{device.usbVersionMajor}}.{{device.usbVersionMinor}}
 </template>
 
 
@@ -34,6 +28,7 @@ div#device-viewer.container-sm
 	left 0
 	right 0
 	margin 0 auto
+	color color-white
 	background-color color-gray
 	box-shadow 0 0 1em #0005
 	border-radius 6px

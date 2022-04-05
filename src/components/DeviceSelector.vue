@@ -20,6 +20,7 @@ div#device-selector.my-5.mx-3
 	position absolute
 	top 0
 	right 0
+	color color-white
 	background-color color-gray
 	box-shadow 0 0 1em #0005
 	border-radius 6px

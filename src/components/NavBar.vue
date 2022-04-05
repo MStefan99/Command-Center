@@ -3,11 +3,6 @@ nav#title-bar
 	a#home-link(href='/') Command Center
 	label#device-status(for="device-toggle" :class='getConnectionMethod().class') {{getConnectionMethod().message}}
 	input#device-toggle.hidden(type="checkbox" v-model="this.sharedState.applicationState.deviceSelectorOpen")
-	transition(name="popup")
-		DeviceSelector(@deviceInfo="device => this.sharedState.viewDevice(device)"
-			v-if="this.sharedState.applicationState.deviceSelectorOpen")
-	transition(name="popup")
-		DeviceViewer(v-if="sharedState.applicationState.viewedDevice")
 </template>
 
 
