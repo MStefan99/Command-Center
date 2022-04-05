@@ -8,29 +8,48 @@ import store from './store.js';
 export const devices = reactive([]);
 
 
-const commands = new Map();
-commands.set(0x1, (data) => {
-	store.aircraft.accX = data.getInt16(2, true);
-	store.aircraft.accY = data.getInt16(4, true);
-	store.aircraft.accZ = data.getInt16(6, true);
-});
+function buf2hex(buffer) {
+	return [...new Uint8Array(buffer)]
+		.map(x => x.toString(16).padStart(2, '0'))
+		.join(' ');
+}
+
+
+const commands = new Map([
+	[1, (data) => {
+		store.aircraft.accX = data.getInt16(2, false);
+		store.aircraft.accY = data.getInt16(4, false);
+		store.aircraft.accZ = data.getInt16(6, false);
+	}],
+	[2, (data) => {
+		store.aircraft.rotX = data.getInt16(2, false);
+		store.aircraft.rotY = data.getInt16(4, false);
+		store.aircraft.rotZ = data.getInt16(6, false);
+	}]
+]);
 
 
 function poll(device) {
+	if (!device._usb.opened) {
+		disconnectDevice(device);
+		return;
+	}
+
 	device._usb.transferIn(1, 8)
 		.then(result => {
 			if (result.data.byteLength < 8) {
 				return;
 			}
+			console.log(buf2hex(result.data.buffer));
 			const commandCode = result.data.getUint8(1);
 			const fn = commands.get(commandCode);
 			if (!fn) {
 				return;
 			}
 			fn(result.data);
-		});
 
-	device._pollHandle = setTimeout(() => poll(device), 35);
+			device._pollHandle = setTimeout(() => poll(device), 35);
+		});
 }
 
 
@@ -60,9 +79,9 @@ export function connectDevice(device) {
 
 
 export function disconnectDevice(device) {
-	devices.splice(devices.findIndex(d => d._usb === device), 1);
-	if (device._pollHandle) {
-		clearTimeout(device._pollHandle);
+	const idx = devices.findIndex(d => d._usb.productId === device._usb.productId);
+	if (idx > -1) {
+		devices.splice(idx, 1);
 	}
 	if (device._usb.opened) {
 		device._usb.close();
@@ -73,9 +92,3 @@ export function disconnectDevice(device) {
 export function connectedDevices() {
 	return devices;
 }
-
-
-navigator.usb.addEventListener('disconnect', event => {
-	disconnectDevice({_usb: event.device});
-	alert('USB connection lost! Please check your connection!');
-});

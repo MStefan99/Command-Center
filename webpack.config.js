@@ -38,5 +38,6 @@ module.exports = {
 		compress: true,
 		hot: true
 	},
-	stats: 'minimal'
+	stats: 'minimal',
+	devtool: 'source-map'
 };
