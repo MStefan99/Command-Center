@@ -15,16 +15,13 @@ function buf2hex(buffer) {
 }
 
 
+const factor = 360 / 16384 / Math.PI;
+
+
 const commands = new Map([
 	[1, (data) => {
-		store.aircraft.accX = data.getInt16(2, false);
-		store.aircraft.accY = data.getInt16(4, false);
-		store.aircraft.accZ = data.getInt16(6, false);
-	}],
-	[2, (data) => {
-		store.aircraft.rotX = data.getInt16(2, false);
-		store.aircraft.rotY = data.getInt16(4, false);
-		store.aircraft.rotZ = data.getInt16(6, false);
+		store.aircraft.roll = data.getInt16(2, true) * factor;
+		store.aircraft.pitch = data.getInt16(4, true) * factor;
 	}]
 ]);
 
@@ -32,25 +29,30 @@ const commands = new Map([
 function poll(device) {
 	if (!device._usb.opened) {
 		disconnectDevice(device);
+		alert('Warning! ' + device._usb.productName + ' was disconnected!');
 		return;
 	}
 
 	device._usb.transferIn(1, 8)
 		.then(result => {
+			device._pollHandle = setTimeout(() => poll(device), 15);
+
 			if (result.data.byteLength < 8) {
 				return;
 			}
-			console.log(buf2hex(result.data.buffer));
+			// console.log(buf2hex(result.data.buffer));
 			const commandCode = result.data.getUint8(1);
 			const fn = commands.get(commandCode);
 			if (!fn) {
 				return;
 			}
 			fn(result.data);
-
-			device._pollHandle = setTimeout(() => poll(device), 35);
 		})
-		.catch(err => console.warn(err));
+		.catch(err => {
+			console.warn(err);
+			disconnectDevice(device);
+			alert('Warning! ' + device._usb.productName + ' was disconnected!');
+		});
 }
 
 

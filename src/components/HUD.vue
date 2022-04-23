@@ -1,22 +1,20 @@
 <template lang="pug">
 div#container
-	AttitudeIndicator#attitude-indicator(:roll="aircraft.accY ?? 0", :pitch="aircraft.accX ?? 0")
-	label Acceleration X
-	meter(min="-32768" max="32768" :value="aircraft.accX ?? 0")
-	label Acceleration Y
-	meter(min="-32768" max="32768" :value="aircraft.accY ?? 0")
-	label Acceleration Z
-	meter(min="-32768" max="32768" :value="aircraft.accZ ?? 0")
-	label Rotation X
-	meter(min="-32768" max="32768" :value="aircraft.rotX ?? 0")
-	label Rotation Y
-	meter(min="-32768" max="32768" :value="aircraft.rotY ?? 0")
-	label Rotation Z
-	meter(min="-32768" max="32768" :value="aircraft.rotZ ?? 0")
+	AttitudeIndicator#attitude-indicator(:roll="aircraft.roll ?? 0", :pitch="aircraft.pitch ?? 0")
+	div.d-flex
+		label Roll
+		span.ml-3 {{Math.round(aircraft.roll)}}°
+	meter(min="-90" max="90" :value="aircraft.roll ?? 0")
+	div.d-flex
+		label Pitch
+		span.ml-3 {{Math.round(aircraft.pitch)}}°
+	meter(min="-90" max="90" :value="aircraft.pitch ?? 0")
 </template>
 
 
 <style scoped lang="stylus">
+@require "../style/stylify.styl"
+
 #container
 	display flex
 	flex-flow column

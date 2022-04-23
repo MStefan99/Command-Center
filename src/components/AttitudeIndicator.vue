@@ -118,10 +118,10 @@ export default {
 	},
 	computed: {
 		rollCSS() {
-			return 'transform:rotate(' + this.roll / 180 + 'deg);transform-origin:center';
+			return 'transform:rotate(' + this.roll + 'deg);transform-origin:center';
 		},
 		pitchCSS() {
-			return 'transform:translateY(' + this.pitch / 40 + 'px);'
+			return 'transform:translateY(' + this.pitch * 10 + 'px);'
 		}
 	}
 }
