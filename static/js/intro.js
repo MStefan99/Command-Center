@@ -78,8 +78,12 @@
 
 
 	function goToPage(pageNumber) {
-		if (!Number.isInteger(pageNumber) || pageNumber < 0 || pageNumber > pages.length - 1) {
+		if (!Number.isInteger(pageNumber) || pageNumber < 0) {
 			return;
+		}
+		if (pageNumber > pages.length - 1) {
+			localStorage.setItem('intro-viewed', 'true');
+			window.location.href = '/';
 		}
 		const direction = pageNumber > currentPage? 1 : -1;
 		const page = pages[pageNumber];
