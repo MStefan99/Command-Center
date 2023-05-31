@@ -2,85 +2,88 @@
 
 import {reactive} from 'vue';
 
-export const devices = reactive([]);
+const devices = reactive([]);
 
 function buf2hex(buffer: ArrayBuffer): string {
 	return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join(' ');
 }
 
-type Device = {
-	_usb: USBDevice;
-	_pollHandle: number | null;
-	type: string;
-};
-
 // const factor = 360 / 16384 / Math.PI;
 
-function poll(device: Device): void {
-	if (!device._usb.opened) {
-		disconnectDevice(device);
-		alert('Warning! ' + device._usb.productName + ' was disconnected!');
-		return;
+export class Device {
+	#usb: USBDevice;
+	#pollHandle: number | null;
+
+	get name(): string {
+		return this.#usb.productName;
 	}
 
-	device._usb
-		.transferIn(1, 8)
-		.then((result: USBInTransferResult) => {
-			device._pollHandle = setTimeout(() => poll(device), 15);
+	constructor(usbDevice: USBDevice) {
+		this.#usb = usbDevice;
+		this.#poll();
+	}
 
-			if (result.data.byteLength < 8) {
-				return;
-			}
-			// console.log(buf2hex(result.data.buffer));
-			// const commandCode = result.data.getUint8(1);
-			// const fn = commands.get(commandCode);
-			// if (!fn) {
-			// 	return;
-			// }
-			// fn(result.data);
-		})
-		.catch((err) => {
-			console.warn(err);
-			disconnectDevice(device);
-			alert('Warning! ' + device._usb.productName + ' was disconnected!');
-		});
+	#poll(): void {
+		if (!this.#usb.opened) {
+			this.disconnect();
+			alert('Warning! ' + this.#usb.productName + ' was disconnected!');
+			return;
+		}
+
+		this.#usb
+			.transferIn(1, 8)
+			.then((result: USBInTransferResult) => {
+				this.#pollHandle = setTimeout(() => this.#poll(), 15);
+
+				if (result.data.byteLength < 8) {
+					return;
+				}
+				// console.log(buf2hex(result.data.buffer));
+				// const commandCode = result.data.getUint8(1);
+				// const fn = commands.get(commandCode);
+				// if (!fn) {
+				// 	return;
+				// }
+				// fn(result.data);
+			})
+			.catch((err) => {
+				console.warn(err);
+				this.disconnect();
+				alert('Warning! ' + this.#usb.productName + ' was disconnected!');
+			});
+	}
+
+	disconnect(): void {
+		const idx = devices.findIndex((d) => d._usb.productId === this.#usb.productId);
+		if (idx > -1) {
+			devices.splice(idx, 1);
+		}
+		if (this.#usb.opened) {
+			this.#usb.close();
+		}
+	}
 }
 
-export function connectDevice(device: USBDevice): Promise<void> {
+export function connectDevice(usbDevice: USBDevice): Promise<Device> {
 	return new Promise((resolve, reject) => {
-		if (devices.some((d) => d._usb.productId === device.productId)) {
+		if (devices.some((d) => d._usb.productId === usbDevice.productId)) {
 			alert('Looks like this device is already connected!');
 			reject();
 		}
 
-		return device
+		return usbDevice
 			.open()
-			.then(() => device.selectConfiguration(1))
-			.then(() => device.claimInterface(0))
+			.then(() => usbDevice.selectConfiguration(1))
+			.then(() => usbDevice.claimInterface(0))
 			.then(() => {
-				const vDev: Device = {
-					_usb: device,
-					_pollHandle: null,
-					type: device.productId !== 0x000a ? 'controller' : 'receiver'
-				};
-
-				poll(vDev);
-				devices.push(vDev);
+				const device = new Device(usbDevice);
+				devices.push(device);
+				return device;
 			})
 			.catch((err) => reject(err));
 	});
 }
 
-export function disconnectDevice(device: Device): void {
-	const idx = devices.findIndex((d) => d._usb.productId === device._usb.productId);
-	if (idx > -1) {
-		devices.splice(idx, 1);
-	}
-	if (device._usb.opened) {
-		device._usb.close();
-	}
-}
-
-export function connectedDevices(): unknown[] {
+export function connectedDevices(): Device[] {
 	return devices;
 }
