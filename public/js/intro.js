@@ -14,27 +14,28 @@
 		{
 			imageSrc: '/img/app-onboarding-1.jpg',
 			title: 'Fly',
-			message: 'Flying just about anything just got more exciting, easy and fun, regardless of your piloting skills!'
+			message:
+				'Flying just about anything just got more exciting, easy and fun, regardless of your piloting skills!'
 		},
 		{
 			imageSrc: '/img/app-onboarding-2.jpg',
 			title: 'Be safe',
-			message: 'Your autopilot is monitoring hundreds of vital parameters so your model is always safe'
+			message:
+				'Your autopilot is monitoring hundreds of vital parameters so your model is always safe'
 		},
 		{
 			imageSrc: '/img/app-onboarding-3.jpg',
 			title: 'Command',
-			message: 'Pilot your model yourself or tell autopilot to go anywhere you want with just a touch!'
+			message:
+				'Pilot your model yourself or tell autopilot to go anywhere you want with just a touch!'
 		}
 	];
-
 
 	function preload() {
 		for (const page of pages) {
 			page.imageObject = getCover(page);
 		}
 	}
-
 
 	function getCover(page) {
 		if (page.imageObject) {
@@ -53,29 +54,23 @@
 		return coverImage;
 	}
 
-
 	function removeElement(element) {
 		if (element) {
 			element.parentNode.removeChild(element);
 		}
 	}
 
-
 	function getTransitionDuration(element, property) {
 		const propertyIndex = getComputedStyle(element)
-				.transitionProperty
-				.split(', ')
-				.findIndex(p => p === property);
+			.transitionProperty.split(', ')
+			.findIndex((p) => p === property);
 
 		const [string, duration, unit] = getComputedStyle(element)
-				.transitionDuration
-				.split(', ')
-				[propertyIndex]
-				.match(/([\d.]+)(m)?s/);
+			.transitionDuration.split(', ')
+			[propertyIndex].match(/([\d.]+)(m)?s/);
 
-		return unit? +duration : +duration * 1000;
+		return unit ? +duration : +duration * 1000;
 	}
-
 
 	function goToPage(pageNumber) {
 		if (!Number.isInteger(pageNumber) || pageNumber < 0) {
@@ -85,7 +80,7 @@
 			localStorage.setItem('intro-viewed', 'true');
 			window.location.href = '/';
 		}
-		const direction = pageNumber > currentPage? 1 : -1;
+		const direction = pageNumber > currentPage ? 1 : -1;
 		const page = pages[pageNumber];
 		currentPage = pageNumber;
 
@@ -112,13 +107,15 @@
 			Object.assign(textContainer.style, {
 				opacity: '0'
 			});
-			setTimeout(() => {  // After cover transition
+			setTimeout(() => {
+				// After cover transition
 				if (oldCover) {
 					oldCover.id = '';
 				}
 				newCover.id = 'current-cover';
 			}, coverDuration);
-			setTimeout(() => {  // After text out transition
+			setTimeout(() => {
+				// After text out transition
 				titleElement.innerText = page.title;
 				messageElement.innerText = page.message;
 				Object.assign(textContainer.style, {
@@ -128,16 +125,13 @@
 		});
 	}
 
-
 	nextButton.addEventListener('click', () => {
 		goToPage(currentPage + 1);
 	});
 
-
 	prevButton.addEventListener('click', () => {
 		goToPage(currentPage - 1);
 	});
-
 
 	preload();
 	goToPage(0);

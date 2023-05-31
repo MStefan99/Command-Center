@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectStartupSharedConfiguration">
     <configurations>
-      <configuration id="npm.Serve" name="Serve" />
-      <configuration id="npm.Watch" name="Watch" />
+      <configuration id="npm.Develop" name="Develop" />
     </configurations>
   </component>
 </project>

@@ -1,19 +1,18 @@
 <template lang="pug">
-div#container
-	AttitudeIndicator#attitude-indicator(:roll="aircraft.roll ?? 0", :pitch="aircraft.pitch ?? 0")
-	div.d-flex
+#container
+	AttitudeIndicator#attitude-indicator(:roll="aircraft.roll ?? 0" :pitch="aircraft.pitch ?? 0")
+	.d-flex
 		label Roll
 		span.ml-3 {{Math.round(aircraft.roll)}}°
 	meter(min="-90" max="90" :value="aircraft.roll ?? 0")
-	div.d-flex
+	.d-flex
 		label Pitch
 		span.ml-3 {{Math.round(aircraft.pitch)}}°
 	meter(min="-90" max="90" :value="aircraft.pitch ?? 0")
 </template>
 
-
 <style scoped lang="stylus">
-@require "../style/stylify.styl"
+@require "../assets/stylify.styl"
 
 #container
 	display flex
@@ -31,20 +30,6 @@ div#container
 		margin 3em
 </style>
 
-
-<script>
-import store from '../js/store.js';
+<script setup lang="ts">
 import AttitudeIndicator from './AttitudeIndicator.vue';
-
-export default {
-	name: 'HUD',
-	components: {
-		AttitudeIndicator
-	},
-	data() {
-		return {
-			aircraft: store.aircraft
-		};
-	}
-};
 </script>

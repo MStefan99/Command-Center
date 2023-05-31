@@ -1,0 +1,21 @@
+doctype html
+
+html(lang="en")
+	head
+		meta(name="viewport" content="width=device-width, initial-scale=1.0")
+		link(rel="stylesheet" href="/style/intro.css")
+		title Welcome to Command Center
+
+	body
+		.d-flex.flex-column.justify-content-between.container-sm.mx-auto.vh-100
+			#cover-container
+			#text-container.mx-3
+				h2#title
+				span#message
+
+			#nav-container.nav-panel.d-flex.justify-content-between.m-3.user-select-none
+				span#button-prev.button Back
+				#page-selector-container
+				span#button-next.button Next
+
+		script(async src="/js/intro.js")
