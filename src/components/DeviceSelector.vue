@@ -1,15 +1,15 @@
 <template lang="pug">
-#device-selector.my-5.mx-3
-	span.bold(v-if="connectedDevices.length") Connected devices
-	span.bold(v-else) No devices connected
-	.my-3
-		.my-2.device(v-for="device of connectedDevices" :key="device.usbDevice.productId")
+.popup-wrapper(@click.self="$emit('close')")
+	.device-selector
+		span.bold(v-if="connectedDevices.length") Connected devices
+		span.bold(v-else) No devices connected
+		.device(v-for="device of connectedDevices" :key="device.usbDevice.productId")
 			span.cursor-pointer(@click="viewedDevice = device") {{device.usbDevice.productName}}
-			span.text-danger.cursor-pointer.ml-2(@click="device.disconnect()") Disconnect
-	button.btn-primary.bold.user-select-none.w-100.mt-1(@click="connect")
-		| {{connectedDevices.length ? 'Connect another' : 'Connect'}}
-	Transition(v-if="viewedDevice")
-		DeviceViewer(:device="viewedDevice" @close="viewedDevice = null")
+			button.red(@click="device.disconnect()") Disconnect
+		button.bold.w-full.mt-4(@click="connect")
+			| {{connectedDevices.length ? 'Connect another' : 'Connect'}}
+	Transition
+		DeviceViewer(v-if="viewedDevice" :device="viewedDevice" @close="viewedDevice = null")
 </template>
 
 <script setup lang="ts">
@@ -17,6 +17,7 @@ import {Device, connectDevice, connectedDevices} from '../scripts/driver';
 import DeviceViewer from './DeviceViewer.vue';
 import {ref} from 'vue';
 
+defineEmits<{(e: 'close'): void}>();
 const viewedDevice = ref<Device | null>(null);
 
 function connect(): void {
@@ -24,17 +25,26 @@ function connect(): void {
 }
 </script>
 
-<style lang="stylus" scoped>
-@require "../assets/colors.styl"
-@require "../assets/stylify.styl"
+<style scoped>
+.device {
+	@apply my-2 flex flex-wrap gap-4 items-center;
+}
 
-#device-selector
-	position absolute
-	top 0
-	right 0
-	color color-white
-	background-color color-gray
-	box-shadow 0 0 1em #0005
-	border-radius 6px
-	padding 1em
+.device-selector {
+	position: fixed;
+	right: 30px;
+	top: 30px;
+	max-width: min(768px, 90vw);
+	margin-left: 30px;
+	padding: 2rem min(2rem, 10%);
+	border-radius: 1rem;
+	color: var(--color-foreground);
+	background-color: var(--color-background);
+}
+
+@media screen and (prefers-color-scheme: dark) {
+	.device-selector {
+		border: 1px solid var(--color-foreground);
+	}
+}
 </style>

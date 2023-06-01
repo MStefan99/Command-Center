@@ -49,7 +49,7 @@ export class Device {
 		this.usbDevice
 			.transferIn(1, 8)
 			.then((result: USBInTransferResult) => {
-				this._pollHandle = setTimeout(() => this.#poll());
+				this._pollHandle = setTimeout(() => this.#poll(), 20);
 
 				if (!result.data.byteLength) {
 					return;
