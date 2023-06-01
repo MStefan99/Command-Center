@@ -1,13 +1,16 @@
 <template lang="pug">
 .popup-wrapper(@click.self="$emit('close')")
 	.device-selector
-		span.bold(v-if="connectedDevices.length") Connected devices
-		span.bold(v-else) No devices connected
-		.device(v-for="device of connectedDevices" :key="device.usbDevice.productId")
-			span.cursor-pointer(@click="viewedDevice = device") {{device.usbDevice.productName}}
-			button.red(@click="device.disconnect()") Disconnect
-		button.bold.w-full.mt-4(@click="connect")
-			| {{connectedDevices.length ? 'Connect another' : 'Connect'}}
+		div(v-if="usbAvailable")
+			span.bold(v-if="connectedDevices.length") Connected devices
+			span.bold(v-else) No devices connected
+			.device(v-for="device of connectedDevices" :key="device.usbDevice.productId")
+				span.cursor-pointer(@click="viewedDevice = device") {{device.usbDevice.productName}}
+				button.red(@click="device.disconnect()") Disconnect
+			button.bold.w-full.mt-4(@click="connect")
+				| {{connectedDevices.length ? 'Connect another' : 'Connect'}}
+		div(v-else)
+			p.text-red Unfortunately, your web browser does not support WebUSB. Please try another browser and/or device.
 	Transition
 		DeviceViewer(v-if="viewedDevice" :device="viewedDevice" @close="viewedDevice = null")
 </template>
@@ -19,6 +22,7 @@ import {ref} from 'vue';
 
 defineEmits<{(e: 'close'): void}>();
 const viewedDevice = ref<Device | null>(null);
+const usbAvailable = 'usb' in navigator;
 
 function connect(): void {
 	connectDevice().catch(() => console.warn('No device selected to connect'));

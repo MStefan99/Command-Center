@@ -11,12 +11,15 @@ function buf2hex(buffer: ArrayBuffer): string {
 	return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join(' ');
 }
 
+let lastPollTime = 0;
+
 export class Device {
 	usbDevice: USBDevice;
 	_pollHandle: number | null;
 
 	constructor(usbDevice: USBDevice) {
 		this.usbDevice = usbDevice;
+		lastPollTime = Date.now();
 		this.#poll();
 	}
 
@@ -55,8 +58,10 @@ export class Device {
 					return;
 				}
 
-				const event = parseData(result.data);
+				const now = Date.now();
+				const event = parseData(result.data, now - lastPollTime);
 				event && deviceEventEmitter.dispatchEvent(event);
+				lastPollTime = now;
 			})
 			.catch((err) => {
 				console.warn(err);

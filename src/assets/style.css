@@ -10,18 +10,18 @@ html {
 	--color-gray: #555;
 	--color-black: black;
 
-	--color-background: #fcfeff;
+	--color-background: var(--color-white);
 	--color-foreground: var(--color-black);
 	--color-muted: #888;
 	--color-light: #ccc;
 
-	--color-accent: rgb(81, 112, 172);
+	--color-accent: #5170ac;
 
 	--color-red: #b43114;
 	--color-orange: #8f6a09;
 	--color-yellow: #727706;
 	--color-green: #1c7c15;
-	--color-blue: rgb(81, 112, 172);
+	--color-blue: #5170ac;
 
 	--color-red-bright: #ff6976;
 	--color-orange-bright: #ffb27a;
@@ -125,9 +125,14 @@ footer {
 	padding: 0.5em 2em;
 }
 
+meter::-webkit-meter-bar {
+	background-color: var(--color-background);
+	border: 1px solid var(--color-blue);
+}
+
 meter::-webkit-meter-optimum-value {
 	background-color: var(--color-blue);
-	transition: inline-size 0.2s ease;
+	transition: inline-size 0.2s linear;
 }
 
 /* Popups */

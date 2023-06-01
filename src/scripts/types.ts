@@ -1,4 +1,6 @@
-export type ModelMessage = object;
+export type ModelMessage = {
+	dt: number;
+};
 
 export type TemperatureMessage = {
 	temperature: number;

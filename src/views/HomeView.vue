@@ -8,7 +8,7 @@
 		p Pitch {{Math.round(device.pitch)}}°
 		meter(min="-90" max="90" :value="device.pitch ?? 0")
 	div
-		p Temperature {{Math.round(device.temperature)}}°C
+		p Temperature {{device.temperature.toFixed(1)}}°C
 		meter(min="10" max="70" :value="device.temperature ?? 0")
 </template>
 
@@ -20,7 +20,8 @@ import {TemperatureEvent} from '../scripts/types';
 
 deviceEventEmitter.addEventListener('temperature', (e) => {
 	const ev = e as TemperatureEvent;
-	device.value.temperature = ev.detail.temperature;
+	device.value.temperature +=
+		(ev.detail.temperature - device.value.temperature) / (2000 / ev.detail.dt);
 });
 
 const device = ref({
