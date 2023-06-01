@@ -1,11 +1,20 @@
 <template lang="pug">
-nav#title-bar
-	a#home-link(href="/") Command Center
-	label#device-status(for="device-toggle" :class="getConnectionMethod().class") {{getConnectionMethod().message}}
-	input#device-toggle.hidden(
-		type="checkbox"
-		v-model="this.sharedState.applicationState.deviceSelectorOpen")
+div
+	nav#title-bar
+		a#home-link(href="/") Command Center
+		label.connected(v-if="connectedDevices.length" for="device-toggle") Connected
+		label(v-else for="device-toggle") Not connected
+		input#device-toggle.hidden(type="checkbox" v-model="deviceSelectorOpen")
+	DeviceSelector(v-if="deviceSelectorOpen")
 </template>
+
+<script setup lang="ts">
+import DeviceSelector from './DeviceSelector.vue';
+import {connectedDevices} from '../scripts/driver';
+import {ref} from 'vue';
+
+const deviceSelectorOpen = ref<boolean>(false);
+</script>
 
 <style lang="stylus" scoped>
 @require "../assets/colors.styl"
@@ -34,15 +43,3 @@ nav#title-bar
 	&.connected
 		color color-green
 </style>
-
-<script setup lang="ts">
-// function getConnectionMethod(): {message: string; class?: string} {
-// 	if (this.sharedState.usbDriver.devices.some((d) => d.type === 'controller')) {
-// 		return {message: 'Direct connection', class: 'connected'};
-// 	} else if (this.sharedState.usbDriver.devices.some((d) => d.type === 'transceiver')) {
-// 		return {message: 'Wireless connection', class: 'warning'};
-// 	} else {
-// 		return {message: 'No connection'};
-// 	}
-// }
-</script>

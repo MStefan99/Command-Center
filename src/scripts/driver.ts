@@ -1,89 +1,109 @@
 'use strict';
 
 import {reactive} from 'vue';
+import {TemperatureEvent} from './types';
+import {parseData} from './parser';
 
-const devices = reactive([]);
+export const connectedDevices = reactive<Device[]>([]);
+export const deviceEventEmitter = new EventTarget();
 
 function buf2hex(buffer: ArrayBuffer): string {
 	return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join(' ');
 }
 
-// const factor = 360 / 16384 / Math.PI;
-
 export class Device {
-	#usb: USBDevice;
-	#pollHandle: number | null;
-
-	get name(): string {
-		return this.#usb.productName;
-	}
+	usbDevice: USBDevice;
+	_pollHandle: number | null;
 
 	constructor(usbDevice: USBDevice) {
-		this.#usb = usbDevice;
+		this.usbDevice = usbDevice;
 		this.#poll();
 	}
 
+	get deviceVersion(): string {
+		return (
+			this.usbDevice.deviceVersionMajor +
+			'.' +
+			this.usbDevice.deviceVersionMinor +
+			'.' +
+			this.usbDevice.deviceVersionSubminor
+		);
+	}
+
+	get usbVersion(): string {
+		return (
+			this.usbDevice.usbVersionMajor +
+			'.' +
+			this.usbDevice.usbVersionMinor +
+			'.' +
+			this.usbDevice.usbVersionSubminor
+		);
+	}
+
 	#poll(): void {
-		if (!this.#usb.opened) {
+		if (!this.usbDevice.opened) {
 			this.disconnect();
-			alert('Warning! ' + this.#usb.productName + ' was disconnected!');
 			return;
 		}
 
-		this.#usb
+		this.usbDevice
 			.transferIn(1, 8)
 			.then((result: USBInTransferResult) => {
-				this.#pollHandle = setTimeout(() => this.#poll(), 15);
+				this._pollHandle = setTimeout(() => this.#poll());
 
-				if (result.data.byteLength < 8) {
+				if (!result.data.byteLength) {
 					return;
 				}
-				// console.log(buf2hex(result.data.buffer));
-				// const commandCode = result.data.getUint8(1);
-				// const fn = commands.get(commandCode);
-				// if (!fn) {
-				// 	return;
-				// }
-				// fn(result.data);
+
+				const event = parseData(result.data);
+				event && deviceEventEmitter.dispatchEvent(event);
 			})
 			.catch((err) => {
 				console.warn(err);
-				this.disconnect();
-				alert('Warning! ' + this.#usb.productName + ' was disconnected!');
+				if (connectedDevices.includes(this)) {
+					alert('Warning! ' + this.usbDevice.productName + ' was disconnected!');
+					this.disconnect();
+				}
 			});
 	}
 
 	disconnect(): void {
-		const idx = devices.findIndex((d) => d._usb.productId === this.#usb.productId);
+		const idx = connectedDevices.findIndex((d) => d.usbDevice === this.usbDevice);
 		if (idx > -1) {
-			devices.splice(idx, 1);
+			connectedDevices.splice(idx, 1);
 		}
-		if (this.#usb.opened) {
-			this.#usb.close();
+		clearTimeout(this._pollHandle);
+		if (this.usbDevice.opened) {
+			this.usbDevice.close();
 		}
 	}
 }
 
-export function connectDevice(usbDevice: USBDevice): Promise<Device> {
-	return new Promise((resolve, reject) => {
-		if (devices.some((d) => d._usb.productId === usbDevice.productId)) {
-			alert('Looks like this device is already connected!');
-			reject();
-		}
+export function connectDevice(): Promise<Device | null> {
+	return navigator.usb
+		.requestDevice({
+			filters: [
+				{vendorId: 0x0424} // TODO: add product ID(s)
+			]
+		})
+		.then((usbDevice) => {
+			return new Promise((resolve, reject) => {
+				if (connectedDevices.some((d) => d.usbDevice === usbDevice)) {
+					alert('Looks like this device is already connected!');
+					reject();
+					return null;
+				}
 
-		return usbDevice
-			.open()
-			.then(() => usbDevice.selectConfiguration(1))
-			.then(() => usbDevice.claimInterface(0))
-			.then(() => {
-				const device = new Device(usbDevice);
-				devices.push(device);
-				return device;
-			})
-			.catch((err) => reject(err));
-	});
-}
-
-export function connectedDevices(): Device[] {
-	return devices;
+				return usbDevice
+					.open()
+					.then(() => usbDevice.selectConfiguration(1))
+					.then(() => usbDevice.claimInterface(0))
+					.then(() => {
+						const device = new Device(usbDevice);
+						connectedDevices.push(device);
+						return device;
+					})
+					.catch((err) => reject(err));
+			});
+		});
 }
