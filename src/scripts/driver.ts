@@ -1,7 +1,7 @@
 'use strict';
 
 import {reactive} from 'vue';
-import {TemperatureEvent} from './types';
+import {ModelEvent} from './types';
 import {parseData} from './parser';
 
 export const connectedDevices = reactive<Device[]>([]);
@@ -59,8 +59,11 @@ export class Device {
 				}
 
 				const now = Date.now();
-				const event = parseData(result.data, now - lastPollTime);
-				event && deviceEventEmitter.dispatchEvent(event);
+				const messages = parseData(result.data);
+				if (messages.length) {
+					const modelEvent = new ModelEvent('data', messages, now - lastPollTime);
+					deviceEventEmitter.dispatchEvent(event);
+				}
 				lastPollTime = now;
 			})
 			.catch((err) => {
