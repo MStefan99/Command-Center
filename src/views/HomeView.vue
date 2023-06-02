@@ -17,10 +17,10 @@ import AttitudeIndicator from '../components/AttitudeIndicator.vue';
 import {ref} from 'vue';
 import {deviceEventEmitter} from '../scripts/driver';
 import {ModelEvent} from '../scripts/types';
-import {parseData} from '../scripts/parser';
 
 deviceEventEmitter.addEventListener('temperature', (e) => {
 	const ev = e as ModelEvent;
+	console.log(ev.detail.commands);
 });
 
 const data = new Uint8Array([
@@ -38,7 +38,7 @@ const data = new Uint8Array([
 	0x00, // Pitch
 	18, // Input channels length,
 	0x02, // Input channels type
-	0x70, // Channel values
+	0x70, // Channel 0-8 values
 	0x72,
 	0xb2,
 	0x26,
@@ -53,10 +53,10 @@ const data = new Uint8Array([
 	0x19,
 	0x0f,
 	0x5a,
-	0x00, // Reserved
+	0x00,
 	18, // Output channels length
 	0x03, // Output channels type
-	0x47, // Channel values
+	0x47, // Channel 0-8 values
 	0xe2,
 	0x12,
 	0xb6,
@@ -71,10 +71,8 @@ const data = new Uint8Array([
 	0x46,
 	0xef,
 	0xeb,
-	0x00 // Reserved
+	0x00
 ]);
-
-console.log('parsed data:', parseData(new DataView(data.buffer)));
 
 const device = ref({
 	roll: 0,

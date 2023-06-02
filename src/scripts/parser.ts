@@ -8,7 +8,10 @@ import {
 	TemperatureMessage
 } from './types';
 
-const commandParsers: Record<CommandDescriptorType, (data: DataView) => ModelMessage[]> = {
+const commandParsers: Record<
+	CommandDescriptorType,
+	(data: DataView) => Map<MessageDescriptorType, ModelMessage>
+> = {
 	[CommandDescriptorType.DataIN]: parseDataIN
 };
 
@@ -43,8 +46,8 @@ function parseOutput(data: DataView): OutputMessage {
 	};
 }
 
-function parseDataIN(data: DataView): ModelMessage[] {
-	const messages: ModelMessage[] = [];
+function parseDataIN(data: DataView): Map<MessageDescriptorType, ModelMessage> {
+	const messages = new Map<MessageDescriptorType, ModelMessage>();
 
 	for (let i = 0; i < data.byteLength; ) {
 		// Byte i contains the length of the message
@@ -52,29 +55,33 @@ function parseDataIN(data: DataView): ModelMessage[] {
 		// Byte i + 1 contains the length of the message
 		const type: MessageDescriptorType = data.getUint8(i + 1);
 
-		messages.push(dataInParsers[type](new DataView(data.buffer, data.byteOffset + i + 2, len - 2)));
+		messages.set(
+			type,
+			dataInParsers[type](new DataView(data.buffer, data.byteOffset + i + 2, len - 2))
+		);
 		i += len;
 	}
 	return messages;
 }
 
-export function parseData(data: DataView): ModelMessage[] {
+export function parseData(
+	data: DataView
+): Map<CommandDescriptorType, Map<MessageDescriptorType, ModelMessage>> {
 	// Byte 0 contains the length of the entire descriptor
 	const totalLength = data.getUint8(0);
-	const messages: ModelMessage[] = [];
+	const messages = new Map<CommandDescriptorType, Map<MessageDescriptorType, ModelMessage>>();
 
 	for (let i = 0; i < totalLength; ) {
 		// Byte 0 contains the length of the descriptor
 		const len = data.getUint8(0);
-		messages.push(
+		const type: CommandDescriptorType = data.getUint8(i + 1);
+		messages.set(
+			type,
 			// Byte i + 1 is the descriptor type and
 			// byte i + 2 is the start of descriptor parameters
-			...commandParsers[data.getUint8(i + 1) as CommandDescriptorType](
-				new DataView(data.buffer, i + 2, len - 2)
-			)
+			commandParsers[type](new DataView(data.buffer, i + 2, len - 2))
 		);
 
-		console.log(messages);
 		i += len;
 	}
 	return messages;

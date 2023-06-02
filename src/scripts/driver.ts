@@ -60,9 +60,9 @@ export class Device {
 
 				const now = Date.now();
 				const messages = parseData(result.data);
-				if (messages.length) {
+				if (messages.size) {
 					const modelEvent = new ModelEvent('data', messages, now - lastPollTime);
-					deviceEventEmitter.dispatchEvent(event);
+					deviceEventEmitter.dispatchEvent(modelEvent);
 				}
 				lastPollTime = now;
 			})

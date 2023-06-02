@@ -9,7 +9,15 @@ export enum MessageDescriptorType {
 	Output = 0x03
 }
 
+export type ParsedMessages = Map<MessageDescriptorType, ModelMessage>;
+export type ParsedCommands = Map<CommandDescriptorType, Map<MessageDescriptorType, ModelMessage>>;
+
 export type ModelMessage = object;
+
+export type ModelEventDetail = {
+	commands: ParsedCommands;
+	dt: number;
+};
 
 export type TemperatureMessage = {
 	temperature: number;
@@ -28,13 +36,8 @@ export type OutputMessage = {
 	channels: number[];
 } & ModelMessage;
 
-export type ModelEventDetail = {
-	messages: ModelMessage[];
-	dt: number;
-};
-
 export class ModelEvent extends CustomEvent<ModelEventDetail> {
-	constructor(name: string, messages: ModelMessage[], dt: number) {
-		super(name, {detail: {messages, dt}});
+	constructor(name: string, commands: ParsedCommands, dt: number) {
+		super(name, {detail: {commands, dt}});
 	}
 }
