@@ -1,33 +1,38 @@
 <template lang="pug">
 .slider
-	datalist(:id="'stops-' + idString")
+	datalist(:id="'stops-' + idString" v-if="list")
 		option(
 			v-for="stop in list"
 			:key="stop"
 			:value="stop"
 			@change="$emit('update:modelValue', value)")
-	input(
-		type="range"
-		:list="list ? 'stops-' + idString : listID"
-		:class="vertical && 'vertical'"
-		v-model="value"
-		min="-1500"
-		max="1500")
-	div {{value}}
+	.bar
+		input(
+			type="range"
+			:list="list ? 'stops-' + idString : listID"
+			:class="vertical && 'vertical'"
+			v-model="value"
+			:min="min"
+			:max="max")
+		.track
+		.value {{value}}
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {computed, ref} from 'vue';
 
 const props = defineProps<{
 	modelValue: number;
 	vertical?: boolean;
+	min?: number;
+	max?: number;
 	list?: number[];
 	listID?: string;
 }>();
 defineEmits<{(e: 'update:modelValue', value: number): void}>();
 
 const value = ref<number>(props.modelValue ?? 0);
+const percentage = computed(() => (value.value - props.min) / (props.max - props.min));
 
 const id = new Uint8Array(4);
 crypto.getRandomValues(id);
@@ -35,25 +40,55 @@ const idString = Array.from(id, (byte) => byte.toString(16).padStart(2, '0')).jo
 </script>
 
 <style scoped>
-.slider {
-	min-width: 5ch;
+.bar {
+	position: relative;
 }
 
-input[type='range']:not(.vertical) {
-	width: 50px;
-	transition: width 0.4s ease;
+.bar:after {
+	content: '';
+	position: absolute;
+	pointer-events: none;
+	left: 0;
+	right: 0;
+	top: 8px;
+	bottom: 8px;
+	border: 1px solid var(--color-accent);
+	border-radius: 4px;
 }
 
-.slider:not(:hover) input[type='range']:not(.vertical) {
-	transition-delay: 0.4s;
-}
-
-.slider:hover input[type='range']:not(.vertical) {
-	width: 200px;
-}
-
-input[type='range'].vertical {
-	width: 30px;
+.bar input[type='range'] {
+	vertical-align: middle;
+	height: 50px;
+	width: 5ch;
 	-webkit-appearance: slider-vertical;
+	opacity: 0;
+	transition: height 0.5s ease;
+}
+
+.bar input[type='range']:focus {
+	height: 200px;
+}
+
+.track {
+	border-radius: 4px;
+	position: absolute;
+	pointer-events: none;
+	left: 0;
+	bottom: 8px;
+	height: max(8px, calc((100% - 16px) * v-bind(percentage)));
+	width: 5ch;
+	background-color: var(--color-accent);
+}
+
+.value {
+	position: absolute;
+	pointer-events: none;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+input[type='range']::-webkit-slider-thumb {
+	-webkit-appearance: none;
 }
 </style>

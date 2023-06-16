@@ -10,7 +10,12 @@
 		thead
 			tr(v-for="i in inputNumber + 1" :key="i")
 				th(v-for="j in inputNumber + 1" :key="j")
-					InputSlider(type="range" listID="stops" :modelValue="i === j ? 1000 : 0")
+					InputSlider(
+						type="range"
+						listID="stops"
+						:modelValue="i === j ? 1000 : 0"
+						:min="-1500"
+						:max="1500")
 </template>
 
 <script setup lang="ts">
