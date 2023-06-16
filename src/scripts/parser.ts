@@ -32,17 +32,17 @@ function parseAttitude(data: DataView): AttitudeMessage {
 
 function parseInput(data: DataView): InputMessage {
 	return {
-		channels: Array.from(
-			new Uint16Array(data.buffer, data.byteOffset, data.byteLength / Uint16Array.BYTES_PER_ELEMENT)
-		)
+		channels: new Array(data.byteLength / Uint16Array.BYTES_PER_ELEMENT)
+			.fill(0)
+			.map((val, i) => data.getInt16(i * Uint16Array.BYTES_PER_ELEMENT, true))
 	};
 }
 
 function parseOutput(data: DataView): OutputMessage {
 	return {
-		channels: Array.from(
-			new Uint16Array(data.buffer, data.byteOffset, data.byteLength / Uint16Array.BYTES_PER_ELEMENT)
-		)
+		channels: new Array(data.byteLength / Uint16Array.BYTES_PER_ELEMENT)
+			.fill(0)
+			.map((val, i) => data.getInt16(i * Uint16Array.BYTES_PER_ELEMENT, true))
 	};
 }
 

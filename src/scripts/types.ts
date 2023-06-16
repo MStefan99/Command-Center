@@ -10,7 +10,7 @@ export enum MessageDescriptorType {
 }
 
 export type ParsedMessages = Map<MessageDescriptorType, ModelMessage>;
-export type ParsedCommands = Map<CommandDescriptorType, Map<MessageDescriptorType, ModelMessage>>;
+export type ParsedCommands = Map<CommandDescriptorType, ParsedMessages>;
 
 export type ModelMessage = object;
 
