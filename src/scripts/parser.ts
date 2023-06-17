@@ -5,6 +5,8 @@ import {
 	MessageDescriptorType,
 	ModelMessage,
 	OutputMessage,
+	ParsedCommands,
+	ParsedMessages,
 	TemperatureMessage
 } from './types';
 
@@ -46,7 +48,7 @@ function parseOutput(data: DataView): OutputMessage {
 	};
 }
 
-function parseDataIN(data: DataView): Map<MessageDescriptorType, ModelMessage> {
+function parseDataIN(data: DataView): ParsedMessages {
 	const messages = new Map<MessageDescriptorType, ModelMessage>();
 
 	for (let i = 0; i < data.byteLength; ) {
@@ -64,9 +66,17 @@ function parseDataIN(data: DataView): Map<MessageDescriptorType, ModelMessage> {
 	return messages;
 }
 
-export function parseData(
-	data: DataView
-): Map<CommandDescriptorType, Map<MessageDescriptorType, ModelMessage>> {
+export function parseSimpleTemp(data: DataView): ParsedCommands {
+	const commands: ParsedCommands = new Map();
+	const messages: ParsedMessages = new Map();
+
+	messages.set(MessageDescriptorType.Temperature, parseTemperature(data));
+	commands.set(CommandDescriptorType.DataIN, messages);
+
+	return commands;
+}
+
+export function parseData(data: DataView): ParsedCommands {
 	// Byte 0 contains the length of the entire descriptor
 	const totalLength = data.getUint8(0);
 	const messages = new Map<CommandDescriptorType, Map<MessageDescriptorType, ModelMessage>>();

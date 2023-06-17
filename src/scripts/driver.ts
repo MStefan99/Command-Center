@@ -1,8 +1,8 @@
 'use strict';
 
 import {reactive} from 'vue';
-import {ModelEvent} from './types';
-import {parseData} from './parser';
+import {MessageDescriptorType, ModelEvent, ParsedCommands, ParsedMessages} from './types';
+import {parseData, parseSimpleTemp} from './parser';
 
 export const connectedDevices = reactive<Device[]>([]);
 export const deviceEventEmitter = new EventTarget();
@@ -59,7 +59,7 @@ export class Device {
 				}
 
 				const now = Date.now();
-				const messages = parseData(result.data);
+				const messages = parseSimpleTemp(result.data);
 				if (messages.size) {
 					const modelEvent = new ModelEvent('data', messages, now - lastPollTime);
 					deviceEventEmitter.dispatchEvent(modelEvent);

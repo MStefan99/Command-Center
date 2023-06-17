@@ -23,57 +23,6 @@ deviceEventEmitter.addEventListener('temperature', (e) => {
 	console.log(ev.detail.commands);
 });
 
-const data = new Uint8Array([
-	48, // Total length
-	0x00, // Data IN descriptor
-	4, // Temp length,
-	0x00, // Temp type
-	45, // Temperature
-	0x00,
-	6, // Attitude length
-	0x01, // Attitude type
-	100,
-	0x00, // Roll
-	50,
-	0x00, // Pitch
-	18, // Input channels length,
-	0x02, // Input channels type
-	0x70, // Channel 0-8 values
-	0x72,
-	0xb2,
-	0x26,
-	0x7d,
-	0x7e,
-	0xa7,
-	0xf6,
-	0xaf,
-	0x24,
-	0xa1,
-	0x44,
-	0x19,
-	0x0f,
-	0x5a,
-	0x00,
-	18, // Output channels length
-	0x03, // Output channels type
-	0x47, // Channel 0-8 values
-	0xe2,
-	0x12,
-	0xb6,
-	0x40,
-	0x59,
-	0x81,
-	0xae,
-	0xa5,
-	0x8d,
-	0xc4,
-	0x90,
-	0x46,
-	0xef,
-	0xeb,
-	0x00
-]);
-
 const device = ref({
 	roll: 0,
 	pitch: 0,

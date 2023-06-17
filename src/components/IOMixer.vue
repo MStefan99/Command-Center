@@ -6,6 +6,7 @@
 		option(value="0")
 		option(value="500")
 		option(value="1000")
+	RangeSlider(type="range" listID="stops" v-model="servo" @update:modelValue="setServo()")
 	table
 		tbody
 			tr
@@ -15,8 +16,8 @@
 	.flex.flex-row.items-stretch
 		table
 			tbody
-				tr(v-for="(row, i) in mixes" :key="i")
-					td(v-for="(value, j) in row" :key="j")
+				tr(v-for="(row, j) in mixes" :key="j")
+					td(v-for="(value, i) in row" :key="i")
 						RangeSlider(type="range" listID="stops" v-model="mixes[i][j]")
 		.text +
 		table
@@ -35,6 +36,7 @@
 <script setup lang="ts">
 import RangeSlider from './RangeSlider.vue';
 import {computed, ref} from 'vue';
+import {connectedDevices} from '../scripts/driver';
 
 const inputNumber = 8;
 const outputNumber = 8;
@@ -42,6 +44,7 @@ const outputNumber = 8;
 const clamp = (val: number, min: number, max: number): number =>
 	val < min ? min : val > max ? max : val;
 
+const servo = ref<number>(0);
 const inputs = ref<number[]>(new Array<number>(inputNumber).fill(0));
 const mixes = ref<number[][]>(
 	Array.from({length: outputNumber}, () => new Array<number>(inputNumber).fill(0))
@@ -62,6 +65,12 @@ const outputs = computed(() => {
 	}
 	return result;
 });
+
+function setServo(): void {
+	const buf = new Int16Array([servo.value]);
+	connectedDevices.forEach((d) => d.usbDevice.transferOut(1, buf));
+	return;
+}
 </script>
 
 <style scoped>

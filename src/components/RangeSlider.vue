@@ -55,6 +55,7 @@ const idString = Array.from(id, (byte) => byte.toString(16).padStart(2, '0')).jo
 	margin: -8px 0;
 	--width: 3ch;
 	--height: 50px;
+	width: var(--width);
 }
 
 .bar:not(:focus-within) .long,
