@@ -7,6 +7,7 @@
 			type="range"
 			v-model="value"
 			@change="$emit('update:modelValue', +value)"
+			:disabled="disabled"
 			:list="list ? 'stops-' + idString : listID"
 			:min="min"
 			:max="max")
@@ -21,6 +22,7 @@ import {computed, ref, watch} from 'vue';
 const props = withDefaults(
 	defineProps<{
 		modelValue: number;
+		disabled?: boolean;
 		min?: number;
 		max?: number;
 		shortScalar?: number;
