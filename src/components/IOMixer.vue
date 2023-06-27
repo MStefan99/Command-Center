@@ -6,37 +6,41 @@
 		option(value="0")
 		option(value="500")
 		option(value="1000")
-	RangeSlider(type="range" listID="stops" v-model="servo" @update:modelValue="setServo()")
-	table
-		tbody
-			tr
-				td(v-for="(input, i) in inputs" :key="i")
-					RangeSlider(type="range" listID="stops" v-model="inputs[i]")
-	.text *
-	.flex.flex-row.items-stretch
+	RangeSlider.m-4.max-w-max(type="range" listID="stops" v-model="servo")
+	button(@click="connectedDevices.forEach((d) => d.read(DescriptorType.Settings))") Read settings
+	button(@click="connectedDevices.forEach((d) => d.read(DescriptorType.Inputs))") Read inputs
+	.m-4
 		table
 			tbody
-				tr(v-for="(row, j) in mixes" :key="j")
-					td(v-for="(value, i) in row" :key="i")
-						RangeSlider(type="range" listID="stops" v-model="mixes[i][j]")
-		.text +
-		table
-			tbody
-				tr(v-for="(trim, i) in trims" :key="i")
-					td
-						RangeSlider(type="range" listID="stops" v-model="trims[i]")
-		.text =
-		table
-			tbody
-				tr(v-for="(output, i) in outputs" :key="i")
-					td
-						RangeSlider(type="range" listID="stops" v-model="outputs[i]" disabled)
+				tr
+					td(v-for="(input, i) in inputs" :key="i")
+						RangeSlider(type="range" listID="stops" v-model="inputs[i]")
+		.text *
+		.flex.flex-row.items-stretch
+			table
+				tbody
+					tr(v-for="(row, j) in mixes" :key="j")
+						td(v-for="(value, i) in row" :key="i")
+							RangeSlider(type="range" listID="stops" v-model="mixes[i][j]")
+			.text +
+			table
+				tbody
+					tr(v-for="(trim, i) in trims" :key="i")
+						td
+							RangeSlider(type="range" listID="stops" v-model="trims[i]")
+			.text =
+			table
+				tbody
+					tr(v-for="(output, i) in outputs" :key="i")
+						td
+							RangeSlider(type="range" listID="stops" v-model="outputs[i]" disabled)
 </template>
 
 <script setup lang="ts">
 import RangeSlider from './RangeSlider.vue';
 import {computed, ref} from 'vue';
 import {connectedDevices} from '../scripts/driver';
+import {DescriptorType} from '../scripts/types';
 
 const inputNumber = 8;
 const outputNumber = 8;
@@ -65,12 +69,6 @@ const outputs = computed(() => {
 	}
 	return result;
 });
-
-function setServo(): void {
-	const buf = new Int16Array([servo.value]);
-	connectedDevices.forEach((d) => d.usbDevice.transferOut(1, buf));
-	return;
-}
 </script>
 
 <style scoped>

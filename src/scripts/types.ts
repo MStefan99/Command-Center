@@ -1,43 +1,139 @@
-export enum CommandDescriptorType {
-	DataIN = 0
+export enum DescriptorType {
+	Status = 0x00,
+	Settings = 0x01,
+	Inputs = 0x02,
+	Mux = 0x03,
+	Trims = 0x04,
+	Outputs = 0x05
 }
 
-export enum MessageDescriptorType {
-	Temperature = 0x00,
-	Attitude = 0x01,
-	Input = 0x02,
-	Output = 0x03
-}
-
-export type ParsedMessages = Map<MessageDescriptorType, ModelMessage>;
-export type ParsedCommands = Map<CommandDescriptorType, ParsedMessages>;
-
-export type ModelMessage = object;
+export type ParsedDescriptor = {
+	type: DescriptorType;
+	data: DescriptorData;
+};
 
 export type ModelEventDetail = {
-	commands: ParsedCommands;
+	descriptor: DescriptorData;
 	dt: number;
 };
 
-export type TemperatureMessage = {
-	temperature: number;
-} & ModelMessage;
-
-export type AttitudeMessage = {
-	roll: number;
-	pitch: number;
-} & ModelMessage;
-
-export type InputMessage = {
-	channels: number[];
-} & ModelMessage;
-
-export type OutputMessage = {
-	channels: number[];
-} & ModelMessage;
-
 export class ModelEvent extends CustomEvent<ModelEventDetail> {
-	constructor(name: string, commands: ParsedCommands, dt: number) {
-		super(name, {detail: {commands, dt}});
+	constructor(name: string, descriptor: DescriptorData, dt: number) {
+		super(name, {detail: {descriptor, dt}});
 	}
+}
+
+export class DescriptorData {
+	view: DataView;
+
+	constructor() {
+		// Nothing to do
+	}
+
+	get data(): object {
+		return {};
+	}
+}
+
+export class StatusDescriptor extends DescriptorData {
+	constructor(data: {temperature: number; acceleration: number[]; rotation: number[]} | DataView) {
+		super();
+		if (data instanceof DataView) {
+			this.view = data;
+			return;
+		}
+
+		const buffer = new ArrayBuffer(14);
+		this.view = new DataView(buffer);
+
+		this.view.setInt8(0, data.temperature);
+		for (let i = 0; i < 3; ++i) {
+			this.view.setInt16(i * Int16Array.BYTES_PER_ELEMENT, data.acceleration[i], true);
+			this.view.setInt16(6 + i * Int16Array.BYTES_PER_ELEMENT, data.acceleration[i], true);
+		}
+	}
+
+	override get data(): {
+		temperature: number;
+		acceleration: number[];
+		rotation: number[];
+	} {
+		return {
+			temperature: this.view.getInt8(this.view.byteOffset),
+			acceleration: new Array(3)
+				.fill(0)
+				.map((val, i) =>
+					this.view.getInt16(this.view.byteOffset + i * Int16Array.BYTES_PER_ELEMENT, true)
+				),
+			rotation: new Array(3)
+				.fill(0)
+				.map((val, i) =>
+					this.view.getInt16(this.view.byteOffset + 6 + i * Int16Array.BYTES_PER_ELEMENT, true)
+				)
+		};
+	}
+}
+
+export class SettingsDescriptor extends DescriptorData {
+	constructor(
+		data:
+			| {inputChannelNumber: number; outputChannelNumber: number; activeSensors: number}
+			| DataView
+	) {
+		super();
+		if (data instanceof DataView) {
+			this.view = data;
+			return;
+		}
+
+		const buffer = new ArrayBuffer(3);
+		this.view = new DataView(buffer);
+		this.view.setUint8(0, data.inputChannelNumber);
+		this.view.setUint8(1, data.outputChannelNumber);
+		this.view.setUint8(2, data.activeSensors);
+	}
+
+	override get data(): {
+		inputChannelNumber: number;
+		outputChannelNumber: number;
+		activeSensors: number;
+	} {
+		return {
+			inputChannelNumber: this.view.getUint8(this.view.byteOffset),
+			outputChannelNumber: this.view.getUint8(this.view.byteOffset + 1),
+			activeSensors: this.view.getUint8(this.view.byteOffset + 2)
+		};
+	}
+}
+
+export class ChannelDescriptor extends DescriptorData {
+	constructor(data: {channels: number[]} | DataView) {
+		super();
+		if (data instanceof DataView) {
+			this.view = data;
+			return;
+		}
+
+		const buffer = new ArrayBuffer(data.channels.length * Int16Array.BYTES_PER_ELEMENT);
+		this.view = new DataView(buffer);
+		for (let i = 0; i < data.channels.length; ++i) {
+			this.view.setInt16(i * Int16Array.BYTES_PER_ELEMENT, data.channels[i], true);
+		}
+	}
+
+	override get data(): {channels: number[]} {
+		return {
+			channels: new Array<number>(
+				(this.view.byteLength - this.view.byteOffset) / Int16Array.BYTES_PER_ELEMENT
+			)
+				.fill(0)
+				.map((val, i) =>
+					this.view.getInt16(this.view.byteOffset + i * Int16Array.BYTES_PER_ELEMENT, true)
+				)
+		};
+	}
+}
+
+export class OutputDescriptor extends DescriptorData {
+	channels: number[];
 }

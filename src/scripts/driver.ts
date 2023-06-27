@@ -1,10 +1,18 @@
 'use strict';
 
-import {reactive} from 'vue';
-import {MessageDescriptorType, ModelEvent, ParsedCommands, ParsedMessages} from './types';
-import {parseData, parseSimpleTemp} from './parser';
+import {reactive, ref} from 'vue';
+import {
+	DescriptorData,
+	DescriptorType,
+	ModelEvent,
+	ParsedDescriptor,
+	SettingsDescriptor,
+	StatusDescriptor,
+	ChannelDescriptor
+} from './types';
 
 export const connectedDevices = reactive<Device[]>([]);
+export const activeDevice = ref<Device | null>(null);
 export const deviceEventEmitter = new EventTarget();
 
 function buf2hex(buffer: ArrayBuffer): string {
@@ -13,9 +21,28 @@ function buf2hex(buffer: ArrayBuffer): string {
 
 let lastPollTime = 0;
 
+function parseData(data: DataView): DescriptorData {
+	const type: DescriptorType = data.getUint8(1);
+
+	return parsers[type](new DataView(data.buffer, 1, data.byteLength - 1));
+}
+
+const parsers: Record<DescriptorType, (data: DataView) => DescriptorData> = {
+	[DescriptorType.Status]: (data) => new StatusDescriptor(data),
+	[DescriptorType.Settings]: (data) => new SettingsDescriptor(data),
+	[DescriptorType.Inputs]: (data) => new ChannelDescriptor(data),
+	[DescriptorType.Mux]: (data) => new ChannelDescriptor(data),
+	[DescriptorType.Trims]: (data) => new ChannelDescriptor(data),
+	[DescriptorType.Outputs]: (data) => new ChannelDescriptor(data)
+};
+
 export class Device {
 	usbDevice: USBDevice;
 	_pollHandle: number | null;
+	settings: {
+		inputChannels: number;
+		outputChannels: number;
+	};
 
 	constructor(usbDevice: USBDevice) {
 		this.usbDevice = usbDevice;
@@ -43,6 +70,34 @@ export class Device {
 		);
 	}
 
+	write(type: DescriptorType, data: DescriptorData): Promise<void> {
+		return new Promise<void>((resolve) => {
+			const d = new Uint8Array();
+
+			d.set([
+				(type << 1) | 1, // Write descriptor [type]
+				0x00 // Reserved
+			]);
+			d.set(new Uint8Array(data.view.buffer), 2);
+
+			this.usbDevice.transferOut(1, d).then(() => resolve());
+		});
+	}
+
+	read(type: DescriptorType): Promise<ParsedDescriptor> {
+		return new Promise<ParsedDescriptor>((resolve) => {
+			const data = new Uint8Array([
+				type << 1, // Read descriptor [type]
+				0x00 // Reserved
+			]);
+
+			this.usbDevice
+				.transferOut(1, data)
+				.then(() => this.usbDevice.transferIn(1, 0xff))
+				.then((r) => parseData(r.data));
+		});
+	}
+
 	#poll(): void {
 		if (!this.usbDevice.opened) {
 			this.disconnect();
@@ -50,20 +105,25 @@ export class Device {
 		}
 
 		this.usbDevice
-			.transferIn(1, 8)
+			.transferIn(1, 0xff)
 			.then((result: USBInTransferResult) => {
 				this._pollHandle = setTimeout(() => this.#poll(), 20);
 
 				if (!result.data.byteLength) {
 					return;
 				}
+				console.log(
+					'Data from device,',
+					result.data.byteLength,
+					'bytes:',
+					buf2hex(result.data.buffer)
+				);
 
 				const now = Date.now();
-				const messages = parseSimpleTemp(result.data);
-				if (messages.size) {
-					const modelEvent = new ModelEvent('data', messages, now - lastPollTime);
-					deviceEventEmitter.dispatchEvent(modelEvent);
-				}
+				const data = parseData(result.data);
+				const modelEvent = new ModelEvent('data', data, now - lastPollTime);
+				deviceEventEmitter.dispatchEvent(modelEvent);
+
 				lastPollTime = now;
 			})
 			.catch((err) => {
@@ -78,6 +138,9 @@ export class Device {
 	disconnect(): void {
 		const idx = connectedDevices.findIndex((d) => d.usbDevice === this.usbDevice);
 		if (idx > -1) {
+			if (connectedDevices[idx] === activeDevice.value) {
+				activeDevice.value = null;
+			}
 			connectedDevices.splice(idx, 1);
 		}
 		clearTimeout(this._pollHandle);
@@ -109,6 +172,7 @@ export function connectDevice(): Promise<Device | null> {
 					.then(() => {
 						const device = new Device(usbDevice);
 						connectedDevices.push(device);
+						activeDevice.value = device;
 						return device;
 					})
 					.catch((err) => reject(err));

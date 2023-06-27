@@ -16,11 +16,19 @@
 import AttitudeIndicator from '../components/AttitudeIndicator.vue';
 import {ref} from 'vue';
 import {deviceEventEmitter} from '../scripts/driver';
-import {ModelEvent} from '../scripts/types';
+import {ModelEvent, StatusDescriptor} from '../scripts/types';
 
-deviceEventEmitter.addEventListener('temperature', (e) => {
+deviceEventEmitter.addEventListener('data', (e) => {
 	const ev = e as ModelEvent;
-	console.log(ev.detail.commands);
+
+	switch (ev.detail.descriptor.constructor) {
+		case StatusDescriptor:
+			{
+				const d = ev.detail.descriptor as StatusDescriptor;
+				device.value.temperature = d.data.temperature;
+			}
+			break;
+	}
 });
 
 const device = ref({

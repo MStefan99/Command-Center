@@ -1,7 +1,10 @@
 <template lang="pug">
 div
-	nav#title-bar
+	#title-bar
 		span#title Command Center
+		nav
+			RouterLink(:to="{name: 'home'}") Home
+			RouterLink(:to="{name: 'settings'}") Settings
 		label#device-status.connected(v-if="connectedDevices.length" for="device-toggle") Connected
 		label#device-status(v-else for="device-toggle") Not connected
 		input#device-toggle.hidden(type="checkbox" v-model="deviceSelectorOpen")
@@ -19,6 +22,17 @@ const deviceSelectorOpen = ref<boolean>(false);
 </script>
 
 <style scoped>
+#title-bar {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+	align-items: center;
+	background-color: var(--color-accent);
+	color: var(--color-white);
+	padding: 0.5em 1em;
+	margin-bottom: 1em;
+}
+
 #title-bar #title {
 	font-size: 1.5em;
 	font-weight: bold;
@@ -34,5 +48,20 @@ const deviceSelectorOpen = ref<boolean>(false);
 
 #device-status.connected {
 	color: var(--color-white);
+}
+
+nav {
+	@apply ml-8 flex flex-row gap-4;
+	height: 100px;
+}
+
+nav a {
+	display: inline-block;
+	height: 100%;
+}
+
+nav a.router-link-active {
+	background-color: var(--color-background);
+	color: var(--color-accent);
 }
 </style>

@@ -38,11 +38,11 @@ const props = withDefaults(
 defineEmits<{(e: 'update:modelValue', value: number): void}>();
 watch(
 	() => props.modelValue,
-	() => (value.value = props.modelValue)
+	() => (value.value = String(props.modelValue))
 );
 
-const value = ref<number>(props.modelValue ?? 0);
-const percentage = computed(() => (value.value - props.min) / (props.max - props.min));
+const value = ref<string>(String(props.modelValue) ?? '0');
+const percentage = computed(() => (+value.value - props.min) / (props.max - props.min));
 
 const id = new Uint8Array(4);
 crypto.getRandomValues(id);
@@ -52,10 +52,11 @@ const idString = Array.from(id, (byte) => byte.toString(16).padStart(2, '0')).jo
 <style scoped>
 .bar {
 	position: relative;
-	margin: -8px 0;
+	margin: -8px auto;
 	--width: 3ch;
 	--height: 50px;
 	width: var(--width);
+	transition: width 0.5s ease;
 }
 
 .bar:not(:focus-within) .long,
@@ -86,7 +87,7 @@ const idString = Array.from(id, (byte) => byte.toString(16).padStart(2, '0')).jo
 	width: var(--width);
 	-webkit-appearance: slider-vertical;
 	opacity: 0;
-	transition: height 0.5s ease, width 0.5s ease;
+	transition: height 0.5s ease;
 }
 
 .track {
