@@ -48,8 +48,8 @@ export class StatusDescriptor extends DescriptorData {
 
 		this.view.setInt8(0, data.temperature);
 		for (let i = 0; i < 3; ++i) {
-			this.view.setInt16(i * Int16Array.BYTES_PER_ELEMENT, data.acceleration[i], true);
-			this.view.setInt16(6 + i * Int16Array.BYTES_PER_ELEMENT, data.acceleration[i], true);
+			this.view.setInt16(2 + i * Int16Array.BYTES_PER_ELEMENT, data.acceleration[i], true);
+			this.view.setInt16(8 + i * Int16Array.BYTES_PER_ELEMENT, data.rotation[i], true);
 		}
 	}
 
@@ -63,12 +63,12 @@ export class StatusDescriptor extends DescriptorData {
 			acceleration: new Array(3)
 				.fill(0)
 				.map((val, i) =>
-					this.view.getInt16(this.view.byteOffset + i * Int16Array.BYTES_PER_ELEMENT, true)
+					this.view.getInt16(this.view.byteOffset + 2 + i * Int16Array.BYTES_PER_ELEMENT, true)
 				),
 			rotation: new Array(3)
 				.fill(0)
 				.map((val, i) =>
-					this.view.getInt16(this.view.byteOffset + 6 + i * Int16Array.BYTES_PER_ELEMENT, true)
+					this.view.getInt16(this.view.byteOffset + 8 + i * Int16Array.BYTES_PER_ELEMENT, true)
 				)
 		};
 	}

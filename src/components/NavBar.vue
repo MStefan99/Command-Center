@@ -1,7 +1,8 @@
 <template lang="pug">
 div
 	#title-bar
-		span#title Command Center
+		//span#title Command Center
+		span#title Test
 		nav
 			RouterLink(:to="{name: 'home'}") Home
 			RouterLink(:to="{name: 'settings'}") Settings
@@ -23,14 +24,14 @@ const deviceSelectorOpen = ref<boolean>(false);
 
 <style scoped>
 #title-bar {
-	display: flex;
-	flex-flow: row wrap;
-	justify-content: space-between;
-	align-items: center;
+	@apply flex flex-row flex-nowrap justify-between items-center;
 	background-color: var(--color-accent);
 	color: var(--color-white);
-	padding: 0.5em 1em;
 	margin-bottom: 1em;
+}
+
+#title-bar > :not(nav) {
+	padding: 0.5em 1em;
 }
 
 #title-bar #title {
@@ -51,12 +52,13 @@ const deviceSelectorOpen = ref<boolean>(false);
 }
 
 nav {
-	@apply ml-8 flex flex-row gap-4;
-	height: 100px;
+	@apply ml-8 flex items-center;
+	align-self: stretch;
 }
 
 nav a {
-	display: inline-block;
+	@apply flex items-center;
+	padding: 0 1ch 0;
 	height: 100%;
 }
 
