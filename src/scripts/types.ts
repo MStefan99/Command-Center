@@ -106,24 +106,24 @@ export class SettingsDescriptor extends DescriptorData {
 	}
 }
 
-export class ChannelDescriptor extends DescriptorData {
-	constructor(data: {channels: number[]} | DataView) {
+export class ArrayDescriptor extends DescriptorData {
+	constructor(data: {values: number[]} | DataView) {
 		super();
 		if (data instanceof DataView) {
 			this.view = data;
 			return;
 		}
 
-		const buffer = new ArrayBuffer(data.channels.length * Int16Array.BYTES_PER_ELEMENT);
+		const buffer = new ArrayBuffer(data.values.length * Int16Array.BYTES_PER_ELEMENT);
 		this.view = new DataView(buffer);
-		for (let i = 0; i < data.channels.length; ++i) {
-			this.view.setInt16(i * Int16Array.BYTES_PER_ELEMENT, data.channels[i], true);
+		for (let i = 0; i < data.values.length; ++i) {
+			this.view.setInt16(i * Int16Array.BYTES_PER_ELEMENT, data.values[i], true);
 		}
 	}
 
-	override get data(): {channels: number[]} {
+	override get data(): {values: number[]} {
 		return {
-			channels: new Array<number>(
+			values: new Array<number>(
 				(this.view.byteLength - this.view.byteOffset) / Int16Array.BYTES_PER_ELEMENT
 			)
 				.fill(0)
@@ -132,8 +132,4 @@ export class ChannelDescriptor extends DescriptorData {
 				)
 		};
 	}
-}
-
-export class OutputDescriptor extends DescriptorData {
-	channels: number[];
 }

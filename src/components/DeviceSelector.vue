@@ -25,7 +25,7 @@ const viewedDevice = ref<Device | null>(null);
 const usbAvailable = 'usb' in navigator;
 
 function connect(): void {
-	connectDevice().catch(() => console.warn('No device selected to connect'));
+	connectDevice();
 }
 </script>
 

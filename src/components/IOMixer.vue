@@ -21,7 +21,7 @@
 				tbody
 					tr(v-for="(row, j) in mixes" :key="j")
 						td(v-for="(value, i) in row" :key="i")
-							RangeSlider(type="range" listID="stops" v-model="mixes[i][j]")
+							RangeSlider(type="range" listID="stops" v-model="mixes[j][i]")
 			.text +
 			table
 				tbody
@@ -38,36 +38,57 @@
 
 <script setup lang="ts">
 import RangeSlider from './RangeSlider.vue';
-import {computed, ref} from 'vue';
-import {connectedDevices} from '../scripts/driver';
-import {DescriptorType} from '../scripts/types';
-
-const inputNumber = 8;
-const outputNumber = 8;
+import {computed, onMounted, ref} from 'vue';
+import {activeDevice, connectedDevices} from '../scripts/driver';
+import {ArrayDescriptor, DescriptorType} from '../scripts/types';
 
 const clamp = (val: number, min: number, max: number): number =>
 	val < min ? min : val > max ? max : val;
 
 const servo = ref<number>(0);
-const inputs = ref<number[]>(new Array<number>(inputNumber).fill(0));
-const mixes = ref<number[][]>(
-	Array.from({length: outputNumber}, () => new Array<number>(inputNumber).fill(0))
-);
-const trims = ref<number[]>(new Array<number>(outputNumber).fill(0));
-const outputs = computed(() => {
-	const result = new Array(outputNumber);
+const inputs = ref<number[]>([]);
+const mixes = ref<number[][]>([]);
+const trims = ref<number[]>([]);
 
-	for (let j = 0; j < inputNumber; ++j) {
-		for (let i = 0; i < outputNumber; ++i) {
+const outputs = computed(() => {
+	const h = mixes.value.length;
+	const w = inputs.value.length;
+
+	const result = new Array(h);
+
+	for (let j = 0; j < h; ++j) {
+		for (let i = 0; i < w; ++i) {
 			let sum = 0;
 
-			for (let k = 0; k < inputNumber; ++k) {
-				sum += (inputs.value[k] * mixes.value[k][j]) / 1000;
+			for (let k = 0; k < w; ++k) {
+				sum += (inputs.value[k] * mixes.value[j][k]) / 1000;
 			}
 			result[j] = clamp(sum + trims.value[j], -1500, 1500);
 		}
 	}
 	return result;
+});
+
+onMounted(() => {
+	activeDevice.value
+		.read(DescriptorType.Inputs)
+		.then((r) => {
+			inputs.value = (r as ArrayDescriptor).data.values;
+		})
+		.then(() => activeDevice.value.read(DescriptorType.Mux))
+		.then((r) => {
+			const values = (r as ArrayDescriptor).data.values;
+			const mux = [];
+
+			while (values.length) {
+				mux.push(values.splice(0, inputs.value.length));
+			}
+			mixes.value = mux;
+		})
+		.then(() => activeDevice.value.read(DescriptorType.Trims))
+		.then((r) => {
+			trims.value = (r as ArrayDescriptor).data.values;
+		});
 });
 </script>
 
