@@ -1,8 +1,7 @@
 <template lang="pug">
 div
 	#title-bar
-		//span#title Command Center
-		span#title Test
+		span#title Command Center
 		nav
 			RouterLink(:to="{name: 'home'}") Home
 			RouterLink(:to="{name: 'settings'}") Settings

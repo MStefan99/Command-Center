@@ -1,15 +1,16 @@
 <template lang="pug">
 #home
-	AttitudeIndicator.attitude(:roll="device.roll ?? 0" :pitch="device.pitch ?? 0")
-	div
-		p Roll {{Math.round(device.roll)}}°
-		meter(min="-90" max="90" :value="device.roll ?? 0")
-	div
-		p Pitch {{Math.round(device.pitch)}}°
-		meter(min="-90" max="90" :value="device.pitch ?? 0")
-	div
-		p Temperature {{device.temperature.toFixed(1)}}°C
-		meter(min="10" max="70" :value="device.temperature ?? 0")
+	AttitudeIndicator.attitude(:roll="0" :pitch="0")
+	p Acceleration
+	div(v-for="(axis, i) of device.acceleration" :key="i")
+		p {{accLabels[i]}} axis: {{axis.toFixed(2)}}
+		meter(min="-2" max="2" :value="axis")
+	p Rotation
+	div(v-for="(axis, i) of device.rotation" :key="i")
+		p {{rotLabels[i]}} axis: {{axis.toFixed(2)}}
+		meter(min="-250" max="250" :value="axis")
+	p Temperature {{device.temperature.toFixed(1)}}°C
+	meter(min="10" max="70" :value="device.temperature ?? 0")
 </template>
 
 <script setup lang="ts">
@@ -17,6 +18,12 @@ import AttitudeIndicator from '../components/AttitudeIndicator.vue';
 import {ref} from 'vue';
 import {deviceEventEmitter} from '../scripts/driver';
 import {ModelEvent, StatusDescriptor} from '../scripts/types';
+
+const accLSB = 0.122 / 1000;
+const rotLSB = 8.75 / 1000;
+
+const accLabels = ['X', 'Y', 'Z'];
+const rotLabels = ['P', 'Q', 'R'];
 
 deviceEventEmitter.addEventListener('data', (e) => {
 	const ev = e as ModelEvent;
@@ -26,14 +33,16 @@ deviceEventEmitter.addEventListener('data', (e) => {
 			{
 				const d = ev.detail.descriptor as StatusDescriptor;
 				device.value.temperature = d.data.temperature;
+				device.value.acceleration = d.data.acceleration.map((a) => a * accLSB);
+				device.value.rotation = d.data.rotation.map((r) => r * rotLSB);
 			}
 			break;
 	}
 });
 
 const device = ref({
-	roll: 0,
-	pitch: 0,
+	acceleration: [0, 0, 0],
+	rotation: [0, 0, 0],
 	temperature: 0
 });
 </script>
