@@ -5,8 +5,9 @@
 	.bar
 		input(
 			type="range"
-			v-model="value"
-			@change="$emit('update:modelValue', +value)"
+			v-model="sliderModel"
+			@input="$emit('update:modelValue', value)"
+			@change="$emit('change', value)"
 			:disabled="disabled"
 			:list="list ? 'stops-' + idString : listID"
 			:min="min"
@@ -35,14 +36,15 @@ const props = withDefaults(
 		shortScalar: 1000
 	}
 );
-defineEmits<{(e: 'update:modelValue', value: number): void}>();
+defineEmits<{(e: 'update:modelValue', value: number): void; (e: 'change', value: number): void}>();
 watch(
 	() => props.modelValue,
-	() => (value.value = String(props.modelValue))
+	() => (sliderModel.value = props.modelValue.toString())
 );
 
-const value = ref<string>(String(props.modelValue) ?? '0');
-const percentage = computed(() => (+value.value - props.min) / (props.max - props.min));
+const sliderModel = ref<string>(props.modelValue.toString() ?? '0');
+const value = computed(() => +sliderModel.value);
+const percentage = computed(() => (value.value - props.min) / (props.max - props.min));
 
 const id = new Uint8Array(4);
 crypto.getRandomValues(id);

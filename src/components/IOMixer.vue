@@ -7,8 +7,6 @@
 		option(value="500")
 		option(value="1000")
 	RangeSlider.m-4.max-w-max(type="range" listID="stops" v-model="servo")
-	button(@click="connectedDevices.forEach((d) => d.read(DescriptorType.Settings))") Read settings
-	button(@click="connectedDevices.forEach((d) => d.read(DescriptorType.Inputs))") Read inputs
 	.m-4
 		table
 			tbody
@@ -21,13 +19,21 @@
 				tbody
 					tr(v-for="(row, j) in mixes" :key="j")
 						td(v-for="(value, i) in row" :key="i")
-							RangeSlider(type="range" listID="stops" v-model="mixes[j][i]")
+							RangeSlider(
+								type="range"
+								listID="stops"
+								v-model="mixes[j][i]"
+								@change="activeDevice.write(DescriptorType.Mux, new ArrayDescriptor({values: mixes.flat()}))")
 			.text +
 			table
 				tbody
 					tr(v-for="(trim, i) in trims" :key="i")
 						td
-							RangeSlider(type="range" listID="stops" v-model="trims[i]")
+							RangeSlider(
+								type="range"
+								listID="stops"
+								v-model="trims[i]"
+								@change="activeDevice.write(DescriptorType.Trims, new ArrayDescriptor({values: trims}))")
 			.text =
 			table
 				tbody
@@ -39,7 +45,7 @@
 <script setup lang="ts">
 import RangeSlider from './RangeSlider.vue';
 import {computed, onMounted, ref} from 'vue';
-import {activeDevice, connectedDevices} from '../scripts/driver';
+import {activeDevice} from '../scripts/driver';
 import {ArrayDescriptor, DescriptorType} from '../scripts/types';
 
 const clamp = (val: number, min: number, max: number): number =>

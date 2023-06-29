@@ -21,6 +21,16 @@ function buf2hex(buffer: ArrayBuffer): string {
 
 let lastPollTime = 0;
 
+function requestToDescriptor(data: DataView): DataView {
+	const d: DataView = new DataView(data.buffer.slice(0));
+	const type: DescriptorType = d.getUint8(1);
+
+	d.setUint8(0, d.byteLength);
+	d.setUint8(1, type);
+
+	return d;
+}
+
 function parseData(data: DataView): DescriptorData {
 	const type: DescriptorType = data.getUint8(1);
 
@@ -71,33 +81,34 @@ export class Device {
 		);
 	}
 
-	write(type: DescriptorType, data: DescriptorData): Promise<void> {
-		return new Promise<void>((resolve) => {
-			const d = new Uint8Array();
-
-			d.set([
-				(type << 1) | 1, // Write descriptor [type]
-				0x00 // Reserved
-			]);
-			d.set(new Uint8Array(data.view.buffer), 2);
-
-			this._transferPromise = this._transferPromise
-				.then(() => this.usbDevice.transferOut(1, d))
-				.then(() => resolve());
-		});
-	}
-
 	read(type: DescriptorType): Promise<DescriptorData> {
 		return new Promise<DescriptorData>((resolve) => {
 			const data = new Uint8Array([
-				type << 1, // Read descriptor [type]
-				0x00 // Reserved
+				0x00, // Read descriptor
+				type // Descriptor type
 			]);
 
 			this._transferPromise = this._transferPromise
 				.then(() => this.usbDevice.transferOut(1, data))
 				.then(() => this.usbDevice.transferIn(1, 0xff))
 				.then((r) => resolve(parseData(r.data)));
+		});
+	}
+
+	write(type: DescriptorType, data: DescriptorData): Promise<void> {
+		return new Promise<void>((resolve) => {
+			const d = new Uint8Array(2 + data.view.byteLength);
+
+			d.set([
+				0x01, // Write descriptor [type]
+				type // Descriptor type
+			]);
+			d.set(new Uint8Array(data.view.buffer), 2);
+
+			// console.log('write', d, parseData(requestToDescriptor(new DataView(d.buffer))));
+			this._transferPromise = this._transferPromise
+				.then(() => this.usbDevice.transferOut(1, d))
+				.then(() => resolve());
 		});
 	}
 
