@@ -186,5 +186,12 @@ import {computed} from 'vue';
 const props = defineProps<{roll: number; pitch: number}>();
 
 const rollCSS = computed(() => `transform:rotate(${props.roll}deg); transform-origin:center;`);
-const pitchCSS = computed(() => `transform:translateY(${props.pitch * 10}px);`);
+const pitchCSS = computed(() => `transform:translateY(${props.pitch}%);`);
+/*
+	Pitch calculation
+	SVG is 1000x1000px and pitch lines are offset by 100px per 10deg, thus:
+
+	1deg = 10px;
+	100% = 1000px => 1% = 10px = 1deg
+*/
 </script>

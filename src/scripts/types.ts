@@ -1,3 +1,9 @@
+const accLSB = 0.122 / 1000;
+const rotLSB = 8.75 / 1000;
+const attLSB = 1 / 20860;
+const RAD_TO_DEG = 180 / Math.PI;
+const DEG_TO_RAD = Math.PI / 180;
+
 export enum DescriptorType {
 	Status = 0x00,
 	Settings = 0x01,
@@ -36,7 +42,17 @@ export class DescriptorData {
 }
 
 export class StatusDescriptor extends DescriptorData {
-	constructor(data: {temperature: number; acceleration: number[]; rotation: number[]} | DataView) {
+	constructor(
+		data:
+			| {
+					temperature: number;
+					acceleration: number[];
+					rotation: number[];
+					roll: number;
+					pitch: number;
+			  }
+			| DataView
+	) {
 		super();
 		if (data instanceof DataView) {
 			this.view = data;
@@ -48,28 +64,38 @@ export class StatusDescriptor extends DescriptorData {
 
 		this.view.setInt8(0, data.temperature);
 		for (let i = 0; i < 3; ++i) {
-			this.view.setInt16(2 + i * Int16Array.BYTES_PER_ELEMENT, data.acceleration[i], true);
-			this.view.setInt16(8 + i * Int16Array.BYTES_PER_ELEMENT, data.rotation[i], true);
+			this.view.setInt16(2 + i * Int16Array.BYTES_PER_ELEMENT, data.acceleration[i] / accLSB, true);
+			this.view.setInt16(8 + i * Int16Array.BYTES_PER_ELEMENT, data.rotation[i] / rotLSB, true);
 		}
+		this.view.setInt16(14, (data.roll / attLSB) * DEG_TO_RAD, true);
+		this.view.setInt16(16, (data.pitch / attLSB) * DEG_TO_RAD, true);
 	}
 
 	override get data(): {
 		temperature: number;
 		acceleration: number[];
 		rotation: number[];
+		roll: number;
+		pitch: number;
 	} {
 		return {
 			temperature: this.view.getInt8(this.view.byteOffset),
 			acceleration: new Array(3)
 				.fill(0)
-				.map((val, i) =>
-					this.view.getInt16(this.view.byteOffset + 2 + i * Int16Array.BYTES_PER_ELEMENT, true)
+				.map(
+					(val, i) =>
+						this.view.getInt16(this.view.byteOffset + 2 + i * Int16Array.BYTES_PER_ELEMENT, true) *
+						accLSB
 				),
 			rotation: new Array(3)
 				.fill(0)
-				.map((val, i) =>
-					this.view.getInt16(this.view.byteOffset + 8 + i * Int16Array.BYTES_PER_ELEMENT, true)
-				)
+				.map(
+					(val, i) =>
+						this.view.getInt16(this.view.byteOffset + 8 + i * Int16Array.BYTES_PER_ELEMENT, true) *
+						rotLSB
+				),
+			roll: this.view.getInt16(this.view.byteOffset + 14, true) * attLSB * RAD_TO_DEG,
+			pitch: this.view.getInt16(this.view.byteOffset + 16, true) * attLSB * RAD_TO_DEG
 		};
 	}
 }

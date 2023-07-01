@@ -121,7 +121,7 @@ meter::-webkit-meter-bar {
 
 meter::-webkit-meter-optimum-value {
 	background-color: var(--color-blue);
-	transition: inline-size 0.2s linear;
+	transition: inline-size 0.1s linear;
 }
 
 /* Popups */
