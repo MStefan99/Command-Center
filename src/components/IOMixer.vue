@@ -19,21 +19,13 @@
 				tbody
 					tr(v-for="(row, j) in mixes" :key="j")
 						td(v-for="(value, i) in row" :key="i")
-							RangeSlider(
-								type="range"
-								listID="stops"
-								v-model="mixes[j][i]"
-								@change="activeDevice.write(DescriptorType.Mux, new ChannelDescriptor({values: mixes.flat()}))")
+							RangeSlider(type="range" listID="stops" v-model="mixes[j][i]" @change="writeMixes()")
 			.text +
 			table
 				tbody
 					tr(v-for="(trim, i) in trims" :key="i")
 						td
-							RangeSlider(
-								type="range"
-								listID="stops"
-								v-model="trims[i]"
-								@change="activeDevice.write(DescriptorType.Trims, new ChannelDescriptor({values: trims}))")
+							RangeSlider(type="range" listID="stops" v-model="trims[i]" @change="writeTrims()")
 			.text =
 			table
 				tbody
@@ -73,6 +65,14 @@ const outputs = computed(() => {
 	}
 	return result;
 });
+
+function writeMixes(): void {
+	activeDevice.value.write(DescriptorType.Mux, new ChannelDescriptor({values: mixes.value.flat()}));
+}
+
+function writeTrims(): void {
+	activeDevice.value.write(DescriptorType.Trims, new ChannelDescriptor({values: trims.value}));
+}
 
 onMounted(() => {
 	if (!activeDevice.value) {
