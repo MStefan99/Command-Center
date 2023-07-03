@@ -9,8 +9,12 @@
 				button.red(@click="device.disconnect()") Disconnect
 			button.bold.w-full.mt-4(@click="connect")
 				| {{connectedDevices.length ? 'Connect another' : 'Connect'}}
-		div(v-else)
-			p.text-red Unfortunately, your web browser does not support WebUSB. Please try another browser and/or device.
+		.no-usb(v-else)
+			p.text-red Unfortunately, WebUSB is unavailable on this page.
+			p.text-red This might happen because you are using an older browser that doesn't support WebUSB
+				|
+				| or you opened this page using an insecure HTTP connection.
+			p.text-red Please ensure you are using a secure connection or try another browser and/or device.
 	Transition
 		DeviceViewer(v-if="viewedDevice" :device="viewedDevice" @close="viewedDevice = null")
 </template>
@@ -44,6 +48,10 @@ function connect(): void {
 	border-radius: 1rem;
 	color: var(--color-foreground);
 	background-color: var(--color-background);
+}
+
+.no-usb p {
+	margin-bottom: 1em;
 }
 
 @media screen and (prefers-color-scheme: dark) {
