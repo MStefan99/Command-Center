@@ -9,6 +9,7 @@ import {
 	SettingsDescriptor,
 	StatusDescriptor
 } from './types';
+import {alert, PopupColor} from './popups';
 
 export const connectedDevices = reactive<Device[]>([]);
 export const activeDevice = ref<Device | null>(null);
@@ -138,7 +139,11 @@ export class Device {
 			.catch((err) => {
 				console.warn(err);
 				if (connectedDevices.includes(this)) {
-					alert('Warning! ' + this.usbDevice.productName + ' was disconnected!');
+					alert(
+						this.usbDevice.productName + ' disconnected!',
+						PopupColor.Red,
+						'Connection was lost to the device'
+					);
 					this.disconnect();
 				}
 			});
@@ -169,7 +174,11 @@ export function connectDevice(): Promise<Device | null> {
 		.then((usbDevice) => {
 			return new Promise((resolve, reject) => {
 				if (connectedDevices.some((d) => d.usbDevice === usbDevice)) {
-					alert('Looks like this device is already connected!');
+					alert(
+						'This device is already connected',
+						PopupColor.Red,
+						'Please select another device to connect'
+					);
 					reject();
 					return null;
 				}
