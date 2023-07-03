@@ -6,8 +6,8 @@
 		option(value="0")
 		option(value="0.5")
 		option(value="1")
-	RangeSlider.m-4.max-w-max(type="range" listID="stops")
 	.m-4
+		h2.mb-4.text-xl.font-bold Channel mixer
 		table
 			tbody
 				tr

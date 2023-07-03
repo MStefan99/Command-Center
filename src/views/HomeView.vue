@@ -1,6 +1,6 @@
 <template lang="pug">
 #home
-	AttitudeIndicator.attitude(:roll="roll" :pitch="pitch")
+	AttitudeIndicator.attitude.m-4(:roll="roll" :pitch="pitch")
 </template>
 
 <script setup lang="ts">
@@ -34,6 +34,5 @@ onUnmounted(() => deviceEventEmitter.removeEventListener('data', listener));
 <style scoped>
 .attitude {
 	max-width: min(500px, 90vw);
-	margin: 1em;
 }
 </style>

@@ -1,5 +1,6 @@
 <template lang="pug">
 .monitor
+	h2.mb-4.text-xl.font-bold Sensor data
 	p.font-bold Acceleration
 	div(v-for="(axis, i) of acceleration" :key="i")
 		p {{accLabels[i]}} axis: {{axis.toFixed(2)}}g
@@ -59,10 +60,7 @@ onUnmounted(() => deviceEventEmitter.removeEventListener('data', listener));
 
 <style scoped>
 .monitor {
-	display: flex;
-	flex-flow: column;
-	padding: 2em;
-	width: 100%;
+	@apply m-4 w-full flex flex-col;
 }
 
 meter {
