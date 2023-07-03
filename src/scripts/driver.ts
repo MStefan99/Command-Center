@@ -2,11 +2,10 @@
 
 import {reactive, ref} from 'vue';
 import {
-	ArrayDescriptor,
+	ChannelDescriptor,
 	DescriptorData,
 	DescriptorType,
 	ModelEvent,
-	ParsedDescriptor,
 	SettingsDescriptor,
 	StatusDescriptor
 } from './types';
@@ -40,10 +39,10 @@ function parseData(data: DataView): DescriptorData {
 const parsers: Record<DescriptorType, (data: DataView) => DescriptorData> = {
 	[DescriptorType.Status]: (data) => new StatusDescriptor(data),
 	[DescriptorType.Settings]: (data) => new SettingsDescriptor(data),
-	[DescriptorType.Inputs]: (data) => new ArrayDescriptor(data),
-	[DescriptorType.Mux]: (data) => new ArrayDescriptor(data),
-	[DescriptorType.Trims]: (data) => new ArrayDescriptor(data),
-	[DescriptorType.Outputs]: (data) => new ArrayDescriptor(data)
+	[DescriptorType.Inputs]: (data) => new ChannelDescriptor(data),
+	[DescriptorType.Mux]: (data) => new ChannelDescriptor(data),
+	[DescriptorType.Trims]: (data) => new ChannelDescriptor(data),
+	[DescriptorType.Outputs]: (data) => new ChannelDescriptor(data)
 };
 
 export class Device {

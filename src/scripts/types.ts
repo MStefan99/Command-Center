@@ -159,3 +159,19 @@ export class ArrayDescriptor extends DescriptorData {
 		};
 	}
 }
+
+export class ChannelDescriptor extends ArrayDescriptor {
+	constructor(data: {values: number[]} | DataView) {
+		if (data instanceof DataView) {
+			super(data);
+			return;
+		}
+
+		data.values = data.values.map((v) => v * 1024);
+		super(data);
+	}
+
+	override get data(): {values: number[]} {
+		return {values: super.data.values.map((v) => v / 1024)};
+	}
+}

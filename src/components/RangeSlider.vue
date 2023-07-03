@@ -23,7 +23,7 @@ import {computed, ref, watch} from 'vue';
 
 const props = withDefaults(
 	defineProps<{
-		modelValue: number;
+		modelValue?: number;
 		disabled?: boolean;
 		min?: number;
 		max?: number;
@@ -60,6 +60,10 @@ const idString = Array.from(id, (byte) => byte.toString(16).padStart(2, '0')).jo
 	--height: 50px;
 	width: var(--width);
 	transition: width 0.5s ease;
+}
+
+.bar:hover {
+	--width: 6ch;
 }
 
 .bar:focus-within {
@@ -110,8 +114,8 @@ const idString = Array.from(id, (byte) => byte.toString(16).padStart(2, '0')).jo
 	transition: opacity 0.2s ease;
 }
 
-.bar:not(:focus-within) .value.long,
-.bar:focus-within .value.short {
+.bar:not(:hover) .value.long,
+.bar:hover .value.short {
 	opacity: 0;
 }
 

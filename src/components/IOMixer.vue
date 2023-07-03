@@ -23,7 +23,7 @@
 								type="range"
 								listID="stops"
 								v-model="mixes[j][i]"
-								@change="activeDevice.write(DescriptorType.Mux, new ArrayDescriptor({values: mixes.flat()}))")
+								@change="activeDevice.write(DescriptorType.Mux, new ChannelDescriptor({values: mixes.flat()}))")
 			.text +
 			table
 				tbody
@@ -33,7 +33,7 @@
 								type="range"
 								listID="stops"
 								v-model="trims[i]"
-								@change="activeDevice.write(DescriptorType.Trims, new ArrayDescriptor({values: trims}))")
+								@change="activeDevice.write(DescriptorType.Trims, new ChannelDescriptor({values: trims}))")
 			.text =
 			table
 				tbody
@@ -46,7 +46,7 @@
 import RangeSlider from './RangeSlider.vue';
 import {computed, onMounted, ref} from 'vue';
 import {activeDevice} from '../scripts/driver';
-import {ArrayDescriptor, DescriptorType} from '../scripts/types';
+import {ChannelDescriptor, DescriptorType} from '../scripts/types';
 
 const clamp = (val: number, min: number, max: number): number =>
 	val < min ? min : val > max ? max : val;
@@ -66,9 +66,9 @@ const outputs = computed(() => {
 			let sum = 0;
 
 			for (let k = 0; k < w; ++k) {
-				sum += (inputs.value[k] * mixes.value[j][k]) / 1000;
+				sum += inputs.value[k] * mixes.value[j][k];
 			}
-			result[j] = clamp(sum + trims.value[j], -1500, 1500);
+			result[j] = clamp(sum + trims.value[j], -1.5, 1.5);
 		}
 	}
 	return result;
@@ -82,11 +82,11 @@ onMounted(() => {
 	activeDevice.value
 		.read(DescriptorType.Inputs)
 		.then((r) => {
-			inputs.value = (r as ArrayDescriptor).data.values;
+			inputs.value = (r as ChannelDescriptor).data.values;
 		})
 		.then(() => activeDevice.value.read(DescriptorType.Mux))
 		.then((r) => {
-			const values = (r as ArrayDescriptor).data.values;
+			const values = (r as ChannelDescriptor).data.values;
 			const mux = [];
 
 			while (values.length) {
@@ -96,7 +96,7 @@ onMounted(() => {
 		})
 		.then(() => activeDevice.value.read(DescriptorType.Trims))
 		.then((r) => {
-			trims.value = (r as ArrayDescriptor).data.values;
+			trims.value = (r as ChannelDescriptor).data.values;
 		});
 });
 </script>

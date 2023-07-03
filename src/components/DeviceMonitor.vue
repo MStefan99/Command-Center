@@ -2,11 +2,11 @@
 .monitor
 	p.font-bold Acceleration
 	div(v-for="(axis, i) of acceleration" :key="i")
-		p {{accLabels[i]}} axis: {{axis.toFixed(2)}}
+		p {{accLabels[i]}} axis: {{axis.toFixed(2)}}g
 		meter(min="-2" max="2" :value="axis")
 	p.font-bold Rotation
 	div(v-for="(axis, i) of rotation" :key="i")
-		p {{rotLabels[i]}} axis: {{axis.toFixed(2)}}
+		p {{rotLabels[i]}} axis: {{axis.toFixed(2)}}°/s
 		meter(min="-250" max="250" :value="axis")
 	p.font-bold Attitude
 	div
