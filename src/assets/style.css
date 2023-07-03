@@ -85,12 +85,21 @@ button.green {
 	background-color: var(--color-green);
 }
 
+/* Main styles */
 body {
+	margin: 0;
+	min-height: 100vh;
+}
+
+#app {
 	display: flex;
 	flex-flow: column nowrap;
 	justify-content: space-between;
-	height: 100vh;
-	margin: 0;
+	min-height: inherit;
+}
+
+main {
+	flex-grow: 1;
 }
 
 .popup-enter-active,
@@ -116,11 +125,11 @@ footer {
 
 meter::-webkit-meter-bar {
 	background-color: var(--color-background);
-	border: 1px solid var(--color-blue);
+	border: 1px solid var(--color-accent);
 }
 
 meter::-webkit-meter-optimum-value {
-	background-color: var(--color-blue);
+	background-color: var(--color-accent);
 	transition: inline-size 0.1s linear;
 }
 

@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+.navbar
 	#title-bar
 		span#title Command Center
 		nav
@@ -26,7 +26,6 @@ const deviceSelectorOpen = ref<boolean>(false);
 	@apply flex flex-row flex-nowrap justify-between items-center;
 	background-color: var(--color-accent);
 	color: var(--color-white);
-	margin-bottom: 1em;
 }
 
 #title-bar > :not(nav) {
@@ -36,6 +35,12 @@ const deviceSelectorOpen = ref<boolean>(false);
 #title-bar #title {
 	font-size: 1.5em;
 	font-weight: bold;
+}
+
+@media screen and (max-width: 768px) {
+	#title-bar #title {
+		display: none;
+	}
 }
 
 #device-status {
@@ -51,14 +56,19 @@ const deviceSelectorOpen = ref<boolean>(false);
 }
 
 nav {
-	@apply ml-8 flex items-center;
+	@apply flex items-center;
 	align-self: stretch;
 }
 
 nav a {
-	@apply flex items-center;
+	@apply flex items-center font-bold;
 	padding: 0 1ch 0;
 	height: 100%;
+	transition: background-color 0.2s;
+}
+
+nav a:hover {
+	background-color: var(--color-blue-bright);
 }
 
 nav a.router-link-active {

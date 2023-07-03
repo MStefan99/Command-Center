@@ -1,12 +1,12 @@
 <template lang="pug">
 .iomixer
 	datalist#stops
-		option(value="-1000")
-		option(value="-500")
+		option(value="-1")
+		option(value="-0.5")
 		option(value="0")
-		option(value="500")
-		option(value="1000")
-	RangeSlider.m-4.max-w-max(type="range" listID="stops" v-model="servo")
+		option(value="0.5")
+		option(value="1")
+	RangeSlider.m-4.max-w-max(type="range" listID="stops")
 	.m-4
 		table
 			tbody
@@ -51,7 +51,6 @@ import {ArrayDescriptor, DescriptorType} from '../scripts/types';
 const clamp = (val: number, min: number, max: number): number =>
 	val < min ? min : val > max ? max : val;
 
-const servo = ref<number>(0);
 const inputs = ref<number[]>([]);
 const mixes = ref<number[][]>([]);
 const trims = ref<number[]>([]);
@@ -76,6 +75,10 @@ const outputs = computed(() => {
 });
 
 onMounted(() => {
+	if (!activeDevice.value) {
+		return;
+	}
+
 	activeDevice.value
 		.read(DescriptorType.Inputs)
 		.then((r) => {

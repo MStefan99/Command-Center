@@ -11,10 +11,11 @@
 			:disabled="disabled"
 			:list="list ? 'stops-' + idString : listID"
 			:min="min"
-			:max="max")
+			:max="max"
+			:step="step")
 		.track
-		.value.short {{(value / shortScalar ?? 1).toFixed(1)}}
-		.value.long {{value}}
+		.value.short {{value.toFixed(1)}}
+		.value.long {{Math.round(value * 100)}}%
 </template>
 
 <script setup lang="ts">
@@ -26,23 +27,23 @@ const props = withDefaults(
 		disabled?: boolean;
 		min?: number;
 		max?: number;
-		shortScalar?: number;
+		step?: number;
 		list?: number[];
 		listID?: string;
 	}>(),
 	{
-		min: -1500,
-		max: 1500,
-		shortScalar: 1000
+		min: -1.5,
+		max: 1.5,
+		step: 0.001
 	}
 );
 defineEmits<{(e: 'update:modelValue', value: number): void; (e: 'change', value: number): void}>();
 watch(
 	() => props.modelValue,
-	() => (sliderModel.value = props.modelValue.toString())
+	() => (sliderModel.value = props.modelValue?.toString() ?? '0')
 );
 
-const sliderModel = ref<string>(props.modelValue.toString() ?? '0');
+const sliderModel = ref<string>(props.modelValue?.toString() ?? '0');
 const value = computed(() => +sliderModel.value);
 const percentage = computed(() => (value.value - props.min) / (props.max - props.min));
 
@@ -55,15 +56,10 @@ const idString = Array.from(id, (byte) => byte.toString(16).padStart(2, '0')).jo
 .bar {
 	position: relative;
 	margin: -8px auto;
-	--width: 3ch;
+	--width: 4ch;
 	--height: 50px;
 	width: var(--width);
 	transition: width 0.5s ease;
-}
-
-.bar:not(:focus-within) .long,
-.bar:focus-within .short {
-	visibility: hidden;
 }
 
 .bar:focus-within {
@@ -111,6 +107,12 @@ const idString = Array.from(id, (byte) => byte.toString(16).padStart(2, '0')).jo
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
+	transition: opacity 0.2s ease;
+}
+
+.bar:not(:focus-within) .value.long,
+.bar:focus-within .value.short {
+	opacity: 0;
 }
 
 input[type='range']::-webkit-slider-thumb {
