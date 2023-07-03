@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import SettingsView from '../views/SettingsView.vue';
-import ModelMonitor from '../components/ModelMonitor.vue';
+import DeviceMonitor from '../components/DeviceMonitor.vue';
 import IOMixer from '../components/IOMixer.vue';
 
 const routes: Array<RouteRecordRaw> = [
@@ -19,7 +19,7 @@ const routes: Array<RouteRecordRaw> = [
 			{
 				path: '/settings/monitor',
 				name: 'settings-monitor',
-				component: ModelMonitor
+				component: DeviceMonitor
 			},
 			{
 				path: '/settings/mixes',

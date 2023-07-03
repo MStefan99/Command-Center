@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+$colors: 'red', 'orange', 'yellow', 'green', 'blue', 'accent';
+
 html {
 	font-family: sans-serif;
 	scroll-behavior: smooth;
@@ -63,26 +65,20 @@ a {
 }
 
 button {
-	color: var(--color-white);
-	background-color: var(--color-blue);
 	padding: 0.5em 1.5ch;
 	border-radius: 8px;
 }
 
-button.red {
-	background-color: var(--color-red);
-}
+@each $color in $colors {
+	button.#{$color} {
+		background-color: var(--color-#{$color});
+		color: var(--color-white);
+	}
 
-button.orange {
-	background-color: var(--color-orange);
-}
-
-button.yellow {
-	background-color: var(--color-yellow);
-}
-
-button.green {
-	background-color: var(--color-green);
+	button.#{$color}-outline {
+		color: var(--color-#{$color});
+		border: 1px solid var(--color-#{$color});
+	}
 }
 
 /* Main styles */

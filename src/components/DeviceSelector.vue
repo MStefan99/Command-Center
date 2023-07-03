@@ -6,8 +6,10 @@
 			span.bold(v-else) No devices connected
 			.device(v-for="device of connectedDevices" :key="device.usbDevice.productId")
 				span.cursor-pointer(@click="viewedDevice = device") {{device.usbDevice.productName}}
+				button.green-outline(v-if="activeDevice === device") Active device
+				button.green(v-else @click="activeDevice = device") Set active
 				button.red(@click="device.disconnect()") Disconnect
-			button.bold.w-full.mt-4(@click="connect")
+			button.accent.bold.w-full.mt-4(@click="connect")
 				| {{connectedDevices.length ? 'Connect another' : 'Connect'}}
 		.no-usb(v-else)
 			p.text-red Unfortunately, WebUSB is unavailable on this page.
@@ -20,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import {Device, connectDevice, connectedDevices} from '../scripts/driver';
+import {Device, connectDevice, connectedDevices, activeDevice} from '../scripts/driver';
 import DeviceViewer from './DeviceViewer.vue';
 import {ref} from 'vue';
 

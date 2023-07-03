@@ -50,10 +50,6 @@ export class Device {
 	usbDevice: USBDevice;
 	_transferPromise: Promise<unknown> = Promise.resolve();
 	_pollHandle: number | null;
-	settings: {
-		inputChannels: number;
-		outputChannels: number;
-	};
 
 	constructor(usbDevice: USBDevice) {
 		this.usbDevice = usbDevice;
@@ -100,7 +96,7 @@ export class Device {
 			const d = new Uint8Array(2 + data.view.byteLength);
 
 			d.set([
-				0x01, // Write descriptor [type]
+				0x01, // Write descriptor
 				type // Descriptor type
 			]);
 			d.set(new Uint8Array(data.view.buffer), 2);

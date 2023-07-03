@@ -1,5 +1,5 @@
 <template lang="pug">
-.model-monitor
+.monitor
 	p.font-bold Acceleration
 	div(v-for="(axis, i) of acceleration" :key="i")
 		p {{accLabels[i]}} axis: {{axis.toFixed(2)}}
@@ -19,7 +19,6 @@
 	div
 		p Temperature: {{temperature}}°C
 		meter(min="10" max="60" :value="temperature ?? 0")
-	p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem, commodi deserunt dignissimos dolor dolore enim facere iusto laudantium minima natus nihil nisi nobis officia provident reprehenderit repudiandae sint soluta tempore.
 </template>
 
 <script setup lang="ts">
@@ -59,10 +58,11 @@ onUnmounted(() => deviceEventEmitter.removeEventListener('data', listener));
 </script>
 
 <style scoped>
-.model-monitor {
+.monitor {
 	display: flex;
 	flex-flow: column;
 	padding: 2em;
+	width: 100%;
 }
 
 meter {
