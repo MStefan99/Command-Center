@@ -2,16 +2,18 @@
 .popup-wrapper(@click.self="$emit('close')")
 	.device-selector
 		div(v-if="usbAvailable")
-			span.bold(v-if="connectedDevices.length") Connected devices
-			span.bold(v-else) No devices connected
+			span.bold.block(v-if="connectedDevices.length") Connected devices
+			span.bold.block(v-else) No devices connected
 			.device(v-for="device of connectedDevices" :key="device.productID")
 				span.cursor-pointer(@click="viewedDevice = device") {{device.productName}}
-				button.green-outline(v-if="device.is(activeDevice)") Active device
-				button.green(v-else @click="activeDevice = device") Set active
-				button.red(@click="device.disconnect()") Disconnect
-			button.accent.bold.w-full.mt-4(@click="connect()")
+				.flex.flex-row.flex-wrap.gap-4
+					button.green-outline.grow(v-if="device.is(activeDevice)") Active device
+					button.green.grow(v-else @click="activeDevice = device") Set active
+					button.red.grow(@click="device.disconnect()") Disconnect
+			span.bold.block.my-2 Connect
+			button.accent.bold.w-full(@click="connect()")
 				| {{connectedDevices.length ? 'Connect another' : 'Connect'}}
-			button.bold.w-full.mt-4(@click="connect(true)") Connect demo device
+			button.bold.accent-outline.w-full.mt-2(@click="connect(true)") Connect demo device
 		.no-usb(v-else)
 			p.text-red Unfortunately, WebUSB is unavailable on this page.
 			p.text-red This might happen because you are using an older browser that doesn't support WebUSB
@@ -42,6 +44,9 @@ function connect(demo?: true): void {
 <style scoped>
 .device {
 	@apply my-2 flex flex-wrap gap-4 items-center;
+	border: 1px solid var(--color-accent);
+	padding: 1em;
+	border-radius: 8px;
 }
 
 .device-selector {

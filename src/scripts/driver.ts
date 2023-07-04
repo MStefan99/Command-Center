@@ -66,10 +66,12 @@ export abstract class Device extends EventTarget {
 	disconnect(): void {
 		const idx = connectedDevices.findIndex((d) => this.is(d));
 		if (idx > -1) {
-			if (connectedDevices[idx] === activeDevice.value) {
-				activeDevice.value = null;
-			}
+			const device = connectedDevices[idx];
 			connectedDevices.splice(idx, 1);
+
+			if (activeDevice.value === device) {
+				activeDevice.value = connectedDevices[0] ?? null;
+			}
 		}
 	}
 }

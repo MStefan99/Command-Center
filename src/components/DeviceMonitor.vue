@@ -57,9 +57,9 @@ function listener(e: Event): void {
 activeDevice.value.addEventListener('data', listener);
 watch(activeDevice, (device, oldDevice) => {
 	oldDevice.removeEventListener('data', listener);
-	device.addEventListener('data', listener);
+	device?.addEventListener('data', listener);
 });
-onUnmounted(() => activeDevice.value.removeEventListener('data', listener));
+onUnmounted(() => activeDevice.value?.removeEventListener('data', listener));
 </script>
 
 <style scoped>

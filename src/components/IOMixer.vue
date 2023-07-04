@@ -94,6 +94,10 @@ function writeTrims(): void {
 }
 
 function loadValues(): void {
+	if (!activeDevice) {
+		return;
+	}
+
 	activeDevice.value
 		.read(DescriptorType.Inputs)
 		.then((r) => {
