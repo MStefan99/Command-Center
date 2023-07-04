@@ -55,6 +55,7 @@
 	.sidebar nav {
 		display: flex;
 		flex-flow: row wrap;
+		color: var(--color-white);
 		background-color: var(--color-accent);
 		border-top: 1px solid var(--color-blue);
 	}
