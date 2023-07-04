@@ -4,7 +4,7 @@
 		div(v-if="usbAvailable")
 			span.bold.block(v-if="connectedDevices.length") Connected devices
 			span.bold.block(v-else) No devices connected
-			.device(v-for="device of connectedDevices" :key="device.productID")
+			.device(v-for="device of connectedDevices" :key="device.id")
 				span.cursor-pointer(@click="viewedDevice = device") {{device.productName}}
 				.flex.flex-row.flex-wrap.gap-4
 					button.green-outline.grow(v-if="device.is(activeDevice)") Active device

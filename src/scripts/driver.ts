@@ -47,6 +47,8 @@ const parsers: Record<DescriptorType, (data: DataView) => DescriptorData> = {
 };
 
 export abstract class Device extends EventTarget {
+	id: number = Math.floor(Math.random() * 0xffffffff);
+
 	abstract get deviceVersion(): string;
 
 	abstract get usbVersion(): string;
@@ -109,7 +111,7 @@ export class DemoDevice extends Device {
 
 		this._updateInterval = setInterval(() => {
 			this._temperature +=
-				Math.random() - 0.5 + (45 - this._temperature) / (this._updateInterval * 100);
+				Math.random() - 0.5 + (45 - this._temperature) / (this._updateInterval * 50);
 
 			if (Math.abs(this._roll - this._targets.roll) * this._speeds.roll < 0.01) {
 				this._targets.roll = Math.random() * 90 - 45;
@@ -158,7 +160,7 @@ export class DemoDevice extends Device {
 	}
 
 	get productID(): number {
-		return;
+		return 1;
 	}
 
 	is(device: DemoDevice): boolean {
