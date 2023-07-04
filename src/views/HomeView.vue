@@ -5,8 +5,8 @@
 
 <script setup lang="ts">
 import AttitudeIndicator from '../components/AttitudeIndicator.vue';
-import {onUnmounted, ref} from 'vue';
-import {deviceEventEmitter} from '../scripts/driver';
+import {onUnmounted, ref, watch} from 'vue';
+import {activeDevice} from '../scripts/driver';
 import {ModelEvent, StatusDescriptor} from '../scripts/types';
 
 const roll = ref(0);
@@ -27,8 +27,12 @@ function listener(e: Event): void {
 	}
 }
 
-deviceEventEmitter.addEventListener('data', listener);
-onUnmounted(() => deviceEventEmitter.removeEventListener('data', listener));
+activeDevice.value.addEventListener('data', listener);
+watch(activeDevice, (device, oldDevice) => {
+	oldDevice.removeEventListener('data', listener);
+	device.addEventListener('data', listener);
+});
+onUnmounted(() => activeDevice.value.removeEventListener('data', listener));
 </script>
 
 <style scoped>

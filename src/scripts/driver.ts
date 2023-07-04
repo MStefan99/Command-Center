@@ -14,7 +14,6 @@ import {alert, PopupColor} from './popups';
 
 export const connectedDevices = reactive<Device[]>([]);
 export const activeDevice = ref<Device | null>(null);
-export const deviceEventEmitter = new EventTarget();
 
 function buf2hex(buffer: ArrayBuffer): string {
 	return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join(' ');
@@ -47,7 +46,7 @@ const parsers: Record<DescriptorType, (data: DataView) => DescriptorData> = {
 	[DescriptorType.Outputs]: (data) => new ChannelDescriptor(data)
 };
 
-export abstract class Device {
+export abstract class Device extends EventTarget {
 	abstract get deviceVersion(): string;
 
 	abstract get usbVersion(): string;
@@ -129,7 +128,7 @@ export class DemoDevice extends Device {
 				pitch: this._pitch
 			});
 			const modelEvent = new ModelEvent('data', data, this._updateTimeout);
-			deviceEventEmitter.dispatchEvent(modelEvent);
+			this.dispatchEvent(modelEvent);
 		}, this._updateTimeout);
 	}
 
@@ -277,7 +276,7 @@ export class PhysicalDevice extends Device {
 				const now = Date.now();
 				const data = parseData(result.data);
 				const modelEvent = new ModelEvent('data', data, now - lastPollTime);
-				deviceEventEmitter.dispatchEvent(modelEvent);
+				this.dispatchEvent(modelEvent);
 
 				lastPollTime = now;
 			})

@@ -23,9 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import {deviceEventEmitter} from '../scripts/driver';
+import {activeDevice} from '../scripts/driver';
 import {ModelEvent, StatusDescriptor} from '../scripts/types';
-import {onUnmounted, ref} from 'vue';
+import {onUnmounted, ref, watch} from 'vue';
 
 const accLabels = ['X', 'Y', 'Z'];
 const rotLabels = ['P', 'Q', 'R'];
@@ -54,8 +54,12 @@ function listener(e: Event): void {
 	}
 }
 
-deviceEventEmitter.addEventListener('data', listener);
-onUnmounted(() => deviceEventEmitter.removeEventListener('data', listener));
+activeDevice.value.addEventListener('data', listener);
+watch(activeDevice, (device, oldDevice) => {
+	oldDevice.removeEventListener('data', listener);
+	device.addEventListener('data', listener);
+});
+onUnmounted(() => activeDevice.value.removeEventListener('data', listener));
 </script>
 
 <style scoped>
