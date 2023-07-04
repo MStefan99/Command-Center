@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import RangeSlider from './RangeSlider.vue';
-import {computed, onMounted, ref} from 'vue';
+import {computed, onMounted, ref, watch} from 'vue';
 import {activeDevice} from '../scripts/driver';
 import {ChannelDescriptor, DescriptorType} from '../scripts/types';
 import {alert, PopupColor} from '../scripts/popups';
@@ -93,11 +93,7 @@ function writeTrims(): void {
 		);
 }
 
-onMounted(() => {
-	if (!activeDevice.value) {
-		return;
-	}
-
+function loadValues(): void {
 	activeDevice.value
 		.read(DescriptorType.Inputs)
 		.then((r) => {
@@ -124,7 +120,10 @@ onMounted(() => {
 				'An error occurred while trying to read settings from device'
 			)
 		);
-});
+}
+
+onMounted(loadValues);
+watch(activeDevice, loadValues);
 </script>
 
 <style scoped>

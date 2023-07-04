@@ -92,6 +92,13 @@ export class DemoDevice extends Device {
 		roll: 0,
 		pitch: 0
 	};
+	_mixes: number[][] = [
+		[-1, 1, 1],
+		[1, 1, -1],
+		[1, -1, 1],
+		[-1, -1, -1]
+	];
+	_trims: number[] = new Array(this._mixes.length).fill(0);
 	_updateInterval: number;
 	_updateTimeout: number = 30;
 
@@ -157,13 +164,42 @@ export class DemoDevice extends Device {
 	}
 
 	read(type: DescriptorType): Promise<DescriptorData> {
-		// switch (type) {
-		// 	case DescriptorType.Status:
-		// }
-		return Promise.resolve(new DescriptorData());
+		switch (type) {
+			case DescriptorType.Settings:
+				return Promise.resolve(
+					new SettingsDescriptor({
+						inputChannelNumber: this._mixes[0].length,
+						outputChannelNumber: this._mixes.length,
+						activeSensors: 0
+					})
+				);
+			case DescriptorType.Inputs:
+				return Promise.resolve(
+					new ChannelDescriptor({values: new Array(this._mixes[0].length).fill(0)})
+				);
+			case DescriptorType.Mux:
+				return Promise.resolve(new ChannelDescriptor({values: this._mixes.flat()}));
+			case DescriptorType.Trims:
+				return Promise.resolve(new ChannelDescriptor({values: this._trims}));
+		}
 	}
 
 	write(type: DescriptorType, data: DescriptorData): Promise<void> {
+		switch (type) {
+			case DescriptorType.Mux:
+				{
+					const values = (data as ChannelDescriptor).data.values;
+					const mux = [];
+
+					while (values.length) {
+						mux.push(values.splice(0, this._mixes[0].length));
+					}
+					this._mixes = mux;
+				}
+				break;
+			case DescriptorType.Trims:
+				this._trims = (data as ChannelDescriptor).data.values;
+		}
 		return Promise.resolve();
 	}
 

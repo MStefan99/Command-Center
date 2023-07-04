@@ -29,12 +29,8 @@ export class ModelEvent extends CustomEvent<ModelEventDetail> {
 	}
 }
 
-export class DescriptorData {
+export abstract class DescriptorData {
 	view: DataView;
-
-	constructor() {
-		// Nothing to do
-	}
 
 	get data(): object {
 		return {};
