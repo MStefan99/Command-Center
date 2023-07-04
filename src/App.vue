@@ -1,14 +1,14 @@
 <template lang="pug">
 NavBar
 main
-	RouterView(v-if="connectedDevices.length")
+	RouterView(v-if="activeDevice")
 	.no-device(v-else) Connect a device to start using Command Center
 	PopupContainer
 </template>
 
 <script setup lang="ts">
 import NavBar from './components/NavBar.vue';
-import {connectedDevices} from './scripts/driver';
+import {activeDevice} from './scripts/driver';
 import PopupContainer from './components/PopupContainer.vue';
 </script>
 

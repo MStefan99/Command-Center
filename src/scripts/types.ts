@@ -1,8 +1,8 @@
 const accLSB = 0.122 / 1000;
 const rotLSB = 8.75 / 1000;
 const attLSB = 1 / 20860;
-const RAD_TO_DEG = 180 / Math.PI;
-const DEG_TO_RAD = Math.PI / 180;
+export const RAD_TO_DEG = 180 / Math.PI;
+export const DEG_TO_RAD = Math.PI / 180;
 
 export enum DescriptorType {
 	Status = 0x00,
@@ -59,7 +59,7 @@ export class StatusDescriptor extends DescriptorData {
 			return;
 		}
 
-		const buffer = new ArrayBuffer(14);
+		const buffer = new ArrayBuffer(18);
 		this.view = new DataView(buffer);
 
 		this.view.setInt8(0, data.temperature);

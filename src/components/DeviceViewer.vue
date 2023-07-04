@@ -5,11 +5,11 @@
 		p Vendor:
 			|
 			|
-			b {{device.usbDevice.manufacturerName}}
+			b {{device.manufacturerName}}
 		p Name:
 			|
 			|
-			b {{device.usbDevice.productName}}
+			b {{device.productName}}
 		p Device version:
 			|
 			|

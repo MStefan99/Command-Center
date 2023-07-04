@@ -4,13 +4,14 @@
 		div(v-if="usbAvailable")
 			span.bold(v-if="connectedDevices.length") Connected devices
 			span.bold(v-else) No devices connected
-			.device(v-for="device of connectedDevices" :key="device.usbDevice.productId")
-				span.cursor-pointer(@click="viewedDevice = device") {{device.usbDevice.productName}}
-				button.green-outline(v-if="activeDevice === device") Active device
+			.device(v-for="device of connectedDevices" :key="device.productID")
+				span.cursor-pointer(@click="viewedDevice = device") {{device.productName}}
+				button.green-outline(v-if="device.is(activeDevice)") Active device
 				button.green(v-else @click="activeDevice = device") Set active
 				button.red(@click="device.disconnect()") Disconnect
-			button.accent.bold.w-full.mt-4(@click="connect")
+			button.accent.bold.w-full.mt-4(@click="connect()")
 				| {{connectedDevices.length ? 'Connect another' : 'Connect'}}
+			button.bold.w-full.mt-4(@click="connect(true)") Connect demo device
 		.no-usb(v-else)
 			p.text-red Unfortunately, WebUSB is unavailable on this page.
 			p.text-red This might happen because you are using an older browser that doesn't support WebUSB
@@ -22,16 +23,19 @@
 </template>
 
 <script setup lang="ts">
-import {Device, connectDevice, connectedDevices, activeDevice} from '../scripts/driver';
+import {connectDevice, connectedDevices, activeDevice, Device} from '../scripts/driver';
 import DeviceViewer from './DeviceViewer.vue';
 import {ref} from 'vue';
+import {alert, PopupColor} from '../scripts/popups';
 
 defineEmits<{(e: 'close'): void}>();
 const viewedDevice = ref<Device | null>(null);
 const usbAvailable = 'usb' in navigator;
 
-function connect(): void {
-	connectDevice();
+function connect(demo?: true): void {
+	connectDevice(demo).catch(() =>
+		alert('Failed to connect', PopupColor.Red, 'An error occurred while trying to connect device')
+	);
 }
 </script>
 
