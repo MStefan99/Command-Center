@@ -39,6 +39,7 @@ import RangeSlider from './RangeSlider.vue';
 import {computed, onMounted, ref} from 'vue';
 import {activeDevice} from '../scripts/driver';
 import {ChannelDescriptor, DescriptorType} from '../scripts/types';
+import {alert, PopupColor} from '../scripts/popups';
 
 const clamp = (val: number, min: number, max: number): number =>
 	val < min ? min : val > max ? max : val;
@@ -67,11 +68,29 @@ const outputs = computed(() => {
 });
 
 function writeMixes(): void {
-	activeDevice.value.write(DescriptorType.Mux, new ChannelDescriptor({values: mixes.value.flat()}));
+	activeDevice.value
+		.write(DescriptorType.Mux, new ChannelDescriptor({values: mixes.value.flat()}))
+		.then(() => alert('Settings saved', PopupColor.Accent, 'Changes were saved successfully'))
+		.catch(() =>
+			alert(
+				'Failed to save',
+				PopupColor.Red,
+				'An error occurred while trying to write settings to device'
+			)
+		);
 }
 
 function writeTrims(): void {
-	activeDevice.value.write(DescriptorType.Trims, new ChannelDescriptor({values: trims.value}));
+	activeDevice.value
+		.write(DescriptorType.Trims, new ChannelDescriptor({values: trims.value}))
+		.then(() => alert('Settings saved', PopupColor.Accent, 'Changes were saved successfully'))
+		.catch(() =>
+			alert(
+				'Failed to save',
+				PopupColor.Red,
+				'An error occurred while trying to write settings to device'
+			)
+		);
 }
 
 onMounted(() => {
@@ -97,7 +116,14 @@ onMounted(() => {
 		.then(() => activeDevice.value.read(DescriptorType.Trims))
 		.then((r) => {
 			trims.value = (r as ChannelDescriptor).data.values;
-		});
+		})
+		.catch(() =>
+			alert(
+				'Failed to load settings',
+				PopupColor.Red,
+				'An error occurred while trying to read settings from device'
+			)
+		);
 });
 </script>
 
