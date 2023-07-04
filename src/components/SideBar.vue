@@ -3,7 +3,8 @@
 	.sidebar
 		nav
 			slot(name="sidebar")
-	slot
+	.sidebar-content
+		slot
 </template>
 
 <script setup lang="ts"></script>
@@ -43,6 +44,10 @@
 	.sidebar nav :deep(a.router-link-active) {
 		background-color: var(--color-background);
 		color: var(--color-foreground);
+	}
+
+	.sidebar-content {
+		flex-grow: 1;
 	}
 }
 

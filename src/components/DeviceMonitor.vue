@@ -64,7 +64,7 @@ onUnmounted(() => activeDevice.value?.removeEventListener('data', listener));
 
 <style scoped>
 .monitor {
-	@apply m-4 w-full flex flex-col;
+	@apply m-4 flex flex-col;
 }
 
 meter {
