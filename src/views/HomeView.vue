@@ -1,6 +1,7 @@
 <template lang="pug">
-#home
-	AttitudeIndicator.attitude.m-4(:roll="roll" :pitch="pitch")
+#home.p-4
+	h2.mb-4.text-xl.font-bold Attitude
+	AttitudeIndicator.attitude(:roll="roll" :pitch="pitch")
 </template>
 
 <script setup lang="ts">
