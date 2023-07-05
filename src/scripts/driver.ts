@@ -82,19 +82,24 @@ export class DemoDevice extends Device {
 	_temperature: number = 15;
 	_roll: number = 0;
 	_pitch: number = 0;
+	_r: number = 0;
 	_targets: {
 		roll: number;
 		pitch: number;
+		r: number;
 	} = {
 		roll: 0,
-		pitch: 0
+		pitch: 0,
+		r: 0
 	};
 	_speeds: {
 		roll: number;
 		pitch: number;
+		r: number;
 	} = {
 		roll: 0,
-		pitch: 0
+		pitch: 0,
+		r: 0
 	};
 	_mixes: number[][] = [
 		[-1, 1, 1, 1],
@@ -114,20 +119,27 @@ export class DemoDevice extends Device {
 			const dt = Date.now() - this._lastUpdate;
 			this._lastUpdate = now;
 
-			const dr = (this._targets.roll - this._roll) * this._speeds.roll;
-			const dp = (this._targets.pitch - this._pitch) * this._speeds.pitch;
-			this._roll += dr * dt;
-			this._pitch += dp * dt;
+			const dRoll = (this._targets.roll - this._roll) * this._speeds.roll;
+			const dPitch = (this._targets.pitch - this._pitch) * this._speeds.pitch;
+			const dR = (this._targets.r - this._r) * this._speeds.r;
+			this._roll += dRoll * dt;
+			this._pitch += dPitch * dt;
+			this._r += dR * dt;
 			this._temperature += Math.random() - 0.5 + (45 - this._temperature) / (dt * 10);
 
-			if (Math.abs(dr) < 0.01) {
+			if (Math.abs(dRoll) < 0.01) {
 				this._targets.roll = Math.random() * 90 - 45;
 				this._speeds.roll = Math.random() / 200;
 			}
 
-			if (Math.abs(dp) < 0.01) {
+			if (Math.abs(dPitch) < 0.01) {
 				this._targets.pitch = Math.random() * 90 - 45;
 				this._speeds.pitch = Math.random() / 200;
+			}
+
+			if (Math.abs(dR) < 0.5) {
+				this._targets.r = Math.random() * 500 - 250;
+				this._speeds.r = Math.random() / 400;
 			}
 
 			const accY = Math.sin(this._pitch * DEG_TO_RAD);
@@ -136,7 +148,7 @@ export class DemoDevice extends Device {
 			const data = new StatusDescriptor({
 				temperature: this._temperature,
 				acceleration: [accX, accY, Math.sqrt(1 - Math.pow(accX, 2) - Math.pow(accY, 2))],
-				rotation: [dr * 1000, dp * 1000, 0],
+				rotation: [dRoll * 1000, dPitch * 1000, this._r],
 				roll: this._roll,
 				pitch: this._pitch
 			});
