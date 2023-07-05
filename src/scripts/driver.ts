@@ -119,8 +119,12 @@ export class DemoDevice extends Device {
 			const dt = Date.now() - this._lastUpdate;
 			this._lastUpdate = now;
 
+			// It's impossible to have both extreme roll and pitch values at the same time, so let's make roll cancel out pitch
+			const maxRoll = Math.pow(90, 2);
+			const targetPitch = (this._targets.pitch * (maxRoll - Math.pow(this._roll, 2))) / maxRoll;
+
 			const dRoll = (this._targets.roll - this._roll) * this._speeds.roll;
-			const dPitch = (this._targets.pitch - this._pitch) * this._speeds.pitch;
+			const dPitch = (targetPitch - this._pitch) * this._speeds.pitch;
 			const dR = (this._targets.r - this._r) * this._speeds.r;
 			this._roll += dRoll * dt;
 			this._pitch += dPitch * dt;
@@ -143,7 +147,7 @@ export class DemoDevice extends Device {
 			}
 
 			const accY = Math.sin(this._pitch * DEG_TO_RAD);
-			const accX = Math.sqrt(1 - Math.pow(accY, 2)) * Math.sin(this._roll * DEG_TO_RAD);
+			const accX = Math.sin(this._roll * DEG_TO_RAD);
 
 			const data = new StatusDescriptor({
 				temperature: this._temperature,
