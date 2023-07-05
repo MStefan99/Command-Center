@@ -6,6 +6,7 @@
 	.bar(tabindex="-1")
 		input(
 			type="range"
+			orient="vertical"
 			v-model="sliderModel"
 			@input="$emit('update:modelValue', value)"
 			@change="$emit('change', value)"
