@@ -97,39 +97,41 @@ export class DemoDevice extends Device {
 		pitch: 0
 	};
 	_mixes: number[][] = [
-		[-1, 1, 1],
-		[1, 1, -1],
-		[1, -1, 1],
-		[-1, -1, -1]
+		[-1, 1, 1, 1],
+		[1, 1, 1, -1],
+		[1, -1, 1, 1],
+		[-1, -1, 1, -1]
 	];
 	_trims: number[] = new Array(this._mixes.length).fill(0);
 	_updateInterval: number;
-	_updateTimeout: number = 30;
+	_lastUpdate: number = Date.now();
 
 	constructor() {
 		super();
 
 		this._updateInterval = setInterval(() => {
-			this._temperature +=
-				Math.random() - 0.5 + (45 - this._temperature) / (this._updateInterval * 50);
+			const now = Date.now();
+			const dt = Date.now() - this._lastUpdate;
+			this._lastUpdate = now;
 
-			if (Math.abs(this._roll - this._targets.roll) * this._speeds.roll < 0.01) {
+			const dr = (this._targets.roll - this._roll) * this._speeds.roll;
+			const dp = (this._targets.pitch - this._pitch) * this._speeds.pitch;
+			this._roll += dr * dt;
+			this._pitch += dp * dt;
+			this._temperature += Math.random() - 0.5 + (45 - this._temperature) / (dt * 10);
+
+			if (Math.abs(dr) < 0.01) {
 				this._targets.roll = Math.random() * 90 - 45;
 				this._speeds.roll = Math.random() / 200;
 			}
 
-			if (Math.abs(this._pitch - this._targets.pitch) * this._speeds.pitch < 0.01) {
+			if (Math.abs(dp) < 0.01) {
 				this._targets.pitch = Math.random() * 90 - 45;
 				this._speeds.pitch = Math.random() / 200;
 			}
 
-			const dr = (this._targets.roll - this._roll) * this._speeds.roll;
-			const dp = (this._targets.pitch - this._pitch) * this._speeds.pitch;
-			this._roll += dr * this._updateTimeout;
-			this._pitch += dp * this._updateTimeout;
-
-			const accX = Math.sin(this._roll * DEG_TO_RAD);
 			const accY = Math.sin(this._pitch * DEG_TO_RAD);
+			const accX = Math.sqrt(1 - Math.pow(accY, 2)) * Math.sin(this._roll * DEG_TO_RAD);
 
 			const data = new StatusDescriptor({
 				temperature: this._temperature,
@@ -138,9 +140,9 @@ export class DemoDevice extends Device {
 				roll: this._roll,
 				pitch: this._pitch
 			});
-			const modelEvent = new ModelEvent('data', data, this._updateTimeout);
+			const modelEvent = new ModelEvent('data', data, dt);
 			this.dispatchEvent(modelEvent);
-		}, this._updateTimeout);
+		}, 30);
 	}
 
 	get deviceVersion(): string {

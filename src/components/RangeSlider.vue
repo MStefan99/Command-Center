@@ -2,7 +2,8 @@
 .slider
 	datalist(v-if="list" :id="'stops-' + idString")
 		option(v-for="stop in list" :key="stop" :value="stop")
-	.bar
+	//- tabindex enables :focus-within in Safari
+	.bar(tabindex="-1")
 		input(
 			type="range"
 			v-model="sliderModel"

@@ -5,7 +5,7 @@
 		span.bold.block(v-else) No devices connected
 		.device(v-for="device of connectedDevices" :key="device.id")
 			span.cursor-pointer(@click="viewedDevice = device") {{device.productName}}
-			.flex.flex-row.flex-wrap.gap-4
+			.flex.flex-row.flex-wrap.gap-4.grow
 				button.green-outline.grow(v-if="device.is(activeDevice)") Active device
 				button.green.grow(v-else @click="activeDevice = device") Set active
 				button.red.grow(@click="device.disconnect()") Disconnect
@@ -13,6 +13,7 @@
 		button.accent.bold.w-full(v-if="usbAvailable" @click="connect()")
 			| {{connectedDevices.length ? 'Connect another' : 'Connect'}}
 		button.bold.accent-outline.w-full.mt-2(@click="connect(true)") Connect demo device
+		button.close.red-outline.w-full.mt-2(@click="$emit('close')") Close
 		p.text-red.mt-4(v-if="!usbAvailable").
 			Unfortunately, WebUSB is unavailable on this page.
 			This might happen because you are using an browser that doesn't support WebUSB
@@ -40,13 +41,6 @@ function connect(demo?: true): void {
 </script>
 
 <style scoped>
-.device {
-	@apply my-2 flex flex-wrap gap-4 items-center;
-	border: 1px solid var(--color-accent);
-	padding: 1em;
-	border-radius: 8px;
-}
-
 .device-selector {
 	position: fixed;
 	right: 30px;
@@ -59,6 +53,29 @@ function connect(demo?: true): void {
 	background-color: var(--color-background);
 }
 
+@media screen and (max-width: 425px) {
+	.popup-wrapper {
+		overflow-y: auto;
+	}
+
+	.device-selector {
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 0;
+		border-radius: 0;
+		max-width: unset;
+		margin: 0;
+	}
+}
+
+.device {
+	@apply my-2 flex flex-wrap gap-4 items-center;
+	border: 1px solid var(--color-accent);
+	padding: 1em;
+	border-radius: 8px;
+}
+
 .no-usb p {
 	margin-bottom: 1em;
 }
@@ -66,6 +83,12 @@ function connect(demo?: true): void {
 @media screen and (prefers-color-scheme: dark) {
 	.device-selector {
 		border: 1px solid var(--color-foreground);
+	}
+}
+
+@media screen and (min-width: 768px) {
+	.close {
+		display: none;
 	}
 }
 </style>

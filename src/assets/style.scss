@@ -121,23 +121,13 @@ footer {
 	padding: 0.5em 2em;
 }
 
-meter::-webkit-meter-bar {
-	background-color: var(--color-background);
-	border: 1px solid var(--color-accent);
-}
-
-meter::-webkit-meter-optimum-value {
-	background-color: var(--color-accent);
-	transition: inline-size 0.1s linear;
-}
-
 /* Popups */
 .popup-wrapper {
 	position: fixed;
 	left: 0;
 	top: 0;
 	right: 0;
-	bottom: 0;
+	min-height: 100vh;
 	background-color: var(--color-overlay);
 	box-shadow: 0 0 3rem var(--color-shadow);
 	-webkit-backdrop-filter: blur(8px);

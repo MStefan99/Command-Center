@@ -14,9 +14,11 @@
 			stroke-linecap: round;
 			stroke-linejoin: round;
 			stroke-miterlimit: 10;
-			clip-path: circle();
 		">
-		<g>
+		<clipPath id="clip">
+			<circle cx="500" cy="500" r="500" />
+		</clipPath>
+		<g clip-path="url(#clip)">
 			<g id="Roll-indicator" serif:id="Roll indicator" :style="rollCSS">
 				<path
 					id="Ground-background"

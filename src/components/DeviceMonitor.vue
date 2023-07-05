@@ -4,28 +4,29 @@
 	p.font-bold Acceleration
 	div(v-for="(axis, i) of acceleration" :key="i")
 		p {{accLabels[i]}} axis: {{axis.toFixed(2)}}g
-		meter(min="-2" max="2" :value="axis")
+		RangeMeter(:min="-2" :max="2" :value="axis")
 	p.font-bold Rotation
 	div(v-for="(axis, i) of rotation" :key="i")
 		p {{rotLabels[i]}} axis: {{axis.toFixed(2)}}°/s
-		meter(min="-250" max="250" :value="axis")
+		RangeMeter(:min="-250" :max="250" :value="axis")
 	p.font-bold Attitude
 	div
 		p Roll: {{roll.toFixed(2)}}°
-		meter(min="-90" max="90" :value="roll ?? 0")
+		RangeMeter(:min="-90" :max="90" :value="roll ?? 0")
 	div
 		p Pitch: {{pitch.toFixed(2)}}°
-		meter(min="-90" max="90" :value="pitch ?? 0")
+		RangeMeter(:min="-90" :max="90" :value="pitch ?? 0")
 	p.font-bold Temperature
 	div
 		p Temperature: {{temperature}}°C
-		meter(min="10" max="60" :value="temperature ?? 0")
+		RangeMeter(:min="10" :max="60" :value="temperature ?? 0")
 </template>
 
 <script setup lang="ts">
 import {activeDevice} from '../scripts/driver';
 import {ModelEvent, StatusDescriptor} from '../scripts/types';
 import {onUnmounted, ref, watch} from 'vue';
+import RangeMeter from './RangeMeter.vue';
 
 const accLabels = ['X', 'Y', 'Z'];
 const rotLabels = ['P', 'Q', 'R'];
@@ -67,9 +68,8 @@ onUnmounted(() => activeDevice.value?.removeEventListener('data', listener));
 	@apply m-4 flex flex-col;
 }
 
-meter {
+.meter {
 	margin-bottom: 1em;
-	height: 3em;
 	width: 100%;
 	max-width: 700px;
 }
