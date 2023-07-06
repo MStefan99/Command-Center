@@ -53,11 +53,11 @@ function connect(demo?: true): void {
 	background-color: var(--color-background);
 }
 
-@media screen and (max-width: 425px) {
-	.popup-wrapper {
-		overflow-y: auto;
-	}
+.popup-wrapper {
+	overflow-y: auto;
+}
 
+@media screen and (max-width: 425px) {
 	.device-selector {
 		position: absolute;
 		top: 0;

@@ -46,6 +46,37 @@ const parsers: Record<DescriptorType, (data: DataView) => DescriptorData> = {
 	[DescriptorType.Outputs]: (data) => new ChannelDescriptor(data)
 };
 
+const demoMixOptions: number[][][] = [
+	// Mix examples for different types of models
+	[
+		// Quadcopter (AETR)
+		[1, -1, 1, 1], // Left front motor
+		[-1, -1, 1, -1], // Right front motor
+		[-1, 1, 1, 1], // Right rear motor
+		[1, 1, 1, -1] // Left rear motor
+	],
+	[
+		// Plane with elevons (AER + Flaps)
+		[1, 0, 0.1, -1], // Right elevon
+		[-1, 0, -0.1, -1], // Left elevon
+		[0, -1, 0, 0.25], // Horizontal stabilizer
+		[0, 0, 1, 0] // Vertical stabilizer
+	],
+	[
+		// V-tail with elevons (AER)
+		[1, -1, 0], // Right elevon
+		[-1, -1, 0], // Left elevon
+		[0.5, -0.5, -0.5], // Right V-tail
+		[-0.5, -0.5, 0.5] // Left V-tail
+	],
+	[
+		// Flying wing with vertical stabilizer (AER)
+		[1, -1, 0.1], // Right elevon
+		[-1, -1, -0.1], // Left elevon
+		[-0.5, 0, 1] // Vertical stabilizer
+	]
+];
+
 export abstract class Device extends EventTarget {
 	id: number = Math.floor(Math.random() * 0xffffffff);
 
@@ -101,12 +132,7 @@ export class DemoDevice extends Device {
 		pitch: 0,
 		r: 0
 	};
-	_mixes: number[][] = [
-		[-1, 1, 1, 1],
-		[1, 1, 1, -1],
-		[1, -1, 1, 1],
-		[-1, -1, 1, -1]
-	];
+	_mixes: number[][] = demoMixOptions[Math.floor(Math.random() * demoMixOptions.length)];
 	_trims: number[] = new Array(this._mixes.length).fill(0);
 	_updateInterval: number;
 	_lastUpdate: number = Date.now();
