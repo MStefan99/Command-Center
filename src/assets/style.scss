@@ -73,7 +73,7 @@ a {
 }
 
 button,
-input {
+input:not([type='range']) {
 	padding: 0.5em 1.5ch;
 	border-radius: 8px;
 }

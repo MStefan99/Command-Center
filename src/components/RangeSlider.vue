@@ -3,10 +3,9 @@
 	datalist(v-if="list" :id="'stops-' + idString")
 		option(v-for="stop in list" :key="stop" :value="stop")
 	//- tabindex enables :focus-within in Safari
-	.bar(tabindex="-1")
+	.bar(tabindex="-1" :class="{vertical: vertical}")
 		input(
 			type="range"
-			orient="vertical"
 			v-model="sliderModel"
 			@input="$emit('update:modelValue', value)"
 			@change="$emit('change', value)"
@@ -27,6 +26,7 @@ const props = withDefaults(
 	defineProps<{
 		modelValue?: number;
 		disabled?: boolean;
+		vertical?: boolean;
 		min?: number;
 		max?: number;
 		step?: number;
@@ -34,6 +34,7 @@ const props = withDefaults(
 		listID?: string;
 	}>(),
 	{
+		vertical: true,
 		min: -1.5,
 		max: 1.5,
 		step: 0.001
@@ -54,33 +55,33 @@ crypto.getRandomValues(id);
 const idString = Array.from(id, (byte) => byte.toString(16).padStart(2, '0')).join('');
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .bar {
 	position: relative;
-	margin: -8px auto;
-	--width: 4ch;
-	--height: 50px;
-	width: var(--width);
+	margin: auto -8px;
 	transition: width 0.5s ease;
+	--width: calc(4ch + 16px);
+	--height: 1.2em;
+	width: var(--width);
 }
 
 .bar:hover {
-	--width: 6ch;
+	--width: calc(6ch + 16px);
 }
 
 .bar:focus-within {
-	--width: 8ch;
-	--height: 200px;
+	--width: 200px;
+	--height: 80px;
 }
 
 .bar:after {
 	content: '';
 	position: absolute;
 	pointer-events: none;
-	left: 0;
-	right: 0;
-	top: 8px;
-	bottom: 8px;
+	top: 0;
+	bottom: 0;
+	left: 8px;
+	right: 8px;
 	border: 1px solid var(--color-accent);
 	border-radius: 4px;
 }
@@ -89,7 +90,6 @@ const idString = Array.from(id, (byte) => byte.toString(16).padStart(2, '0')).jo
 	vertical-align: middle;
 	height: var(--height);
 	width: var(--width);
-	-webkit-appearance: slider-vertical;
 	opacity: 0;
 	transition: height 0.5s ease;
 }
@@ -98,12 +98,12 @@ const idString = Array.from(id, (byte) => byte.toString(16).padStart(2, '0')).jo
 	border-radius: 4px;
 	position: absolute;
 	pointer-events: none;
-	left: 0;
-	bottom: 8px;
-	height: max(8px, calc((100% - 16px) * v-bind(percentage)));
-	width: 100%;
+	left: 8px;
+	bottom: 0;
+	width: max(8px, calc((100% - 16px) * v-bind(percentage)));
+	height: 100%;
 	background-color: var(--color-accent);
-	transition: width 0.5s ease;
+	transition: height 0.5s ease;
 }
 
 .value {
