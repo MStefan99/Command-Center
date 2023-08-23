@@ -1,7 +1,7 @@
 import {reactive, ref} from 'vue';
 
 export enum PopupColor {
-	Accent = '',
+	Accent = 'accent',
 	Green = 'green',
 	Yellow = 'yellow',
 	Red = 'red'

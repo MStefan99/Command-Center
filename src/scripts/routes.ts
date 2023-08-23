@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import DeviceMonitor from '../components/DeviceMonitor.vue';
 import IOMixer from '../components/IOMixer.vue';
+import {crashCourse} from './analytics';
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -40,5 +41,7 @@ const router = createRouter({
 	history: createWebHistory('/'),
 	routes
 });
+
+router.afterEach(() => crashCourse.value?.sendHit());
 
 export default router;

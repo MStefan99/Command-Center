@@ -1,13 +1,15 @@
+import {ref} from 'vue';
+
 type CrashCourse = {
-	sendLog: (message: string, level: number, tag?: string) => Promise<true>;
-	sendFeedback: (message: string) => Promise<true>;
-	sendHit: () => Promise<true>;
+	sendLog: (message: string, level: number, tag?: string) => Promise<boolean>;
+	sendFeedback: (message: string) => Promise<boolean>;
+	sendHit: () => Promise<boolean>;
 };
 
-export let crashCourse: CrashCourse | null = null;
+export const crashCourse = ref<CrashCourse | null>(null);
 
 async function loadSettings(): Promise<void> {
-	if (import.meta.env.CRASH_COURSE_URL === null || import.meta.env.CRASH_COURSE_KEY === null) {
+	if (!import.meta.env.VITE_CRASH_COURSE_URL || !import.meta.env.VITE_CRASH_COURSE_KEY) {
 		console.warn(
 			'Warning, Crash Course not configured! Errors will not be sent for further analysis.'
 		);
@@ -16,13 +18,13 @@ async function loadSettings(): Promise<void> {
 
 	const cc = (await import(
 		/* @vite-ignore */
-		`${import.meta.env.CRASH_COURSE_URL}/cc?k=${import.meta.env.CRASH_COURSE_KEY === null}`
+		`${import.meta.env.VITE_CRASH_COURSE_URL}/cc?k=${import.meta.env.VITE_CRASH_COURSE_KEY}`
 	)) as CrashCourse;
 	if (cc) {
-		crashCourse = cc;
+		crashCourse.value = cc;
 		cc.sendHit();
 	} else {
-		console.warn('Crash Course could not be loaded from', import.meta.env.CRASH_COURSE_URL);
+		console.warn('Crash Course could not be loaded from', import.meta.env.VITE_CRASH_COURSE_URL);
 	}
 }
 
