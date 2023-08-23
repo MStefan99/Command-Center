@@ -26,22 +26,21 @@ function sendFeedback(): void {
 		'Your feedback helps make Command Center better. Please type your message in the field below.'
 	)
 		.then((message) =>
-			crashCourse.value
-				?.sendFeedback(message)
-				.then(() =>
+			crashCourse.value?.sendFeedback(message).then((err) => {
+				if (err) {
+					alert(
+						'Feedback was not sent',
+						PopupColor.Red,
+						err?.message || 'Failed to send feedback. Please check your connection and try again.'
+					);
+				} else {
 					alert(
 						'Feedback sent',
 						PopupColor.Green,
 						'Thank you! All feedback helps make Command Center better.'
-					)
-				)
-				.catch(() =>
-					alert(
-						'Feedback was not sent',
-						PopupColor.Red,
-						'Failed to send feedback. Please check your connection and try again.'
-					)
-				)
+					);
+				}
+			})
 		)
 		.catch(() => null);
 }

@@ -4,6 +4,11 @@ const attLSB = 1 / 20860;
 export const RAD_TO_DEG = 180 / Math.PI;
 export const DEG_TO_RAD = Math.PI / 180;
 
+export type ErrorResponse = {
+	error: string;
+	message: string;
+};
+
 export enum DescriptorType {
 	Status = 0x00,
 	Settings = 0x01,
