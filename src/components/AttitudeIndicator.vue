@@ -216,3 +216,10 @@ const pitchCSS = computed(() => `transform:translateY(${props.pitch}%);`);
 	100% = 1000px => 1% = 10px = 1deg
 */
 </script>
+
+<style scoped>
+#Roll-gizmo,
+#Pitch-gizmo {
+	transition: transform 30ms linear;
+}
+</style>
