@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
+import {createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw} from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import DeviceMonitor from '../components/DeviceMonitor.vue';
@@ -38,7 +38,7 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-	history: createWebHistory('/'),
+	history: import.meta.env.VITE_ROUTER === 'hash' ? createWebHashHistory() : createWebHistory('/'),
 	routes
 });
 
